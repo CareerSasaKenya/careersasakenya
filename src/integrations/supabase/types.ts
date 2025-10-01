@@ -26,6 +26,7 @@ export type Database = {
           salary: string | null
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           apply_email?: string | null
@@ -38,6 +39,7 @@ export type Database = {
           salary?: string | null
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           apply_email?: string | null
@@ -50,6 +52,7 @@ export type Database = {
           salary?: string | null
           title?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

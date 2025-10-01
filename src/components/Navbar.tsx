@@ -1,8 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Briefcase } from "lucide-react";
+import { Briefcase, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Navbar = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Error signing out");
+    } else {
+      toast.success("Signed out successfully");
+      navigate("/");
+    }
+  };
+
   return (
     <nav className="border-b bg-card sticky top-0 z-50 backdrop-blur-sm bg-card/80">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -19,11 +35,29 @@ const Navbar = () => {
           <Link to="/jobs">
             <Button variant="ghost">Browse Jobs</Button>
           </Link>
-          <Link to="/post-job">
-            <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
-              Post a Job
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <Link to="/post-job">
+                <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
+                  Post a Job
+                </Button>
+              </Link>
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={handleSignOut}
+                title="Sign Out"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -14,6 +15,14 @@ import { Loader2 } from "lucide-react";
 const PostJob = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      toast.error("Please sign in to post jobs");
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -27,7 +36,8 @@ const PostJob = () => {
 
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase.from("jobs").insert([data]);
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase.from("jobs").insert([{ ...data, user_id: user.id }]);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -63,6 +73,14 @@ const PostJob = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
