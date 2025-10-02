@@ -1,13 +1,19 @@
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MapPin, Building2, DollarSign, Mail, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Building2, DollarSign, Mail, ExternalLink, Loader2, Bookmark, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 
 const JobDetails = () => {
   const { id } = useParams();
+  const { user } = useAuth();
+  const { role } = useUserRole();
+  const queryClient = useQueryClient();
 
   const { data: job, isLoading } = useQuery({
     queryKey: ["job", id],
@@ -20,6 +26,79 @@ const JobDetails = () => {
       
       if (error) throw error;
       return data;
+    },
+  });
+
+  const { data: hasApplied } = useQuery({
+    queryKey: ["application", id, user?.id],
+    enabled: !!user && !!id && role === "candidate",
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("job_applications")
+        .select("id")
+        .eq("job_id", id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      
+      return !!data;
+    },
+  });
+
+  const { data: isSaved } = useQuery({
+    queryKey: ["saved", id, user?.id],
+    enabled: !!user && !!id && role === "candidate",
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("saved_jobs")
+        .select("id")
+        .eq("job_id", id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      
+      return !!data;
+    },
+  });
+
+  const applyMutation = useMutation({
+    mutationFn: async () => {
+      if (!user || !id) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("job_applications")
+        .insert({ job_id: id, user_id: user.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Application submitted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] });
+    },
+    onError: () => {
+      toast.error("Failed to submit application");
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      if (!user || !id) throw new Error("Not authenticated");
+      if (isSaved) {
+        const { error } = await supabase
+          .from("saved_jobs")
+          .delete()
+          .eq("job_id", id)
+          .eq("user_id", user.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("saved_jobs")
+          .insert({ job_id: id, user_id: user.id });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success(isSaved ? "Job removed from saved" : "Job saved successfully!");
+      queryClient.invalidateQueries({ queryKey: ["saved", id, user?.id] });
+    },
+    onError: () => {
+      toast.error("Failed to save job");
     },
   });
 
@@ -101,21 +180,53 @@ const JobDetails = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
+              {role === "candidate" && user && (
+                <>
+                  <Button 
+                    onClick={() => applyMutation.mutate()}
+                    size="lg"
+                    className="bg-gradient-primary hover:opacity-90 transition-opacity"
+                    disabled={hasApplied || applyMutation.isPending}
+                  >
+                    {hasApplied ? (
+                      <>
+                        <CheckCircle className="mr-2 h-5 w-5" />
+                        Applied
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="mr-2 h-5 w-5" />
+                        Apply Now
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    onClick={() => saveMutation.mutate()}
+                    variant="outline"
+                    size="lg"
+                    disabled={saveMutation.isPending}
+                  >
+                    <Bookmark className={`mr-2 h-5 w-5 ${isSaved ? 'fill-current' : ''}`} />
+                    {isSaved ? "Saved" : "Save Job"}
+                  </Button>
+                </>
+              )}
               {(job.apply_email || job.apply_link) && (
                 <Button 
                   onClick={handleApply}
                   size="lg"
-                  className="bg-gradient-primary hover:opacity-90 transition-opacity"
+                  variant={role === "candidate" ? "outline" : "default"}
+                  className={role === "candidate" ? "" : "bg-gradient-primary hover:opacity-90 transition-opacity"}
                 >
                   {job.apply_email ? (
                     <>
                       <Mail className="mr-2 h-5 w-5" />
-                      Apply via Email
+                      Email Employer
                     </>
                   ) : (
                     <>
                       <ExternalLink className="mr-2 h-5 w-5" />
-                      Apply Now
+                      External Apply Link
                     </>
                   )}
                 </Button>

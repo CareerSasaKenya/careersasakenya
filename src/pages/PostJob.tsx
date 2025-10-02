@@ -43,7 +43,7 @@ const PostJob = () => {
     onSuccess: () => {
       toast.success("Job posted successfully!");
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
-      navigate("/jobs");
+      navigate("/dashboard");
     },
     onError: (error) => {
       toast.error("Failed to post job. Please try again.");

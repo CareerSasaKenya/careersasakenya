@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, Briefcase } from "lucide-react";
 import { z } from "zod";
@@ -22,6 +23,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"employer" | "candidate">("candidate");
 
   useEffect(() => {
     if (user) {
@@ -40,7 +42,7 @@ const Auth = () => {
 
     setLoading(true);
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -48,17 +50,30 @@ const Auth = () => {
       },
     });
 
-    setLoading(false);
-
     if (error) {
+      setLoading(false);
       if (error.message.includes("already registered")) {
         toast.error("This email is already registered. Please sign in instead.");
       } else {
         toast.error(error.message);
       }
-    } else {
-      toast.success("Account created successfully! You can now sign in.");
-      setPassword("");
+      return;
+    }
+
+    // Insert user role
+    if (data.user) {
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .insert({ user_id: data.user.id, role });
+
+      setLoading(false);
+
+      if (roleError) {
+        toast.error("Failed to set user role. Please contact support.");
+      } else {
+        toast.success("Account created successfully! You can now sign in.");
+        setPassword("");
+      }
     }
   };
 
@@ -183,6 +198,18 @@ const Auth = () => {
                     <p className="text-xs text-muted-foreground">
                       Password must be at least 6 characters
                     </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">I am a</Label>
+                    <Select value={role} onValueChange={(value: "employer" | "candidate") => setRole(value)}>
+                      <SelectTrigger id="role">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="candidate">Job Seeker</SelectItem>
+                        <SelectItem value="employer">Employer</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <Button 
                     type="submit" 

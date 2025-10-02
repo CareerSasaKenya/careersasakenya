@@ -37,10 +37,8 @@ const Navbar = () => {
           </Link>
           {user ? (
             <>
-              <Link to="/post-job">
-                <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
-                  Post a Job
-                </Button>
+              <Link to="/dashboard">
+                <Button variant="ghost">Dashboard</Button>
               </Link>
               <Button 
                 variant="outline" 
