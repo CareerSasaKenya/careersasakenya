@@ -103,7 +103,7 @@ const Auth = () => {
       }
     } else {
       toast.success("Signed in successfully!");
-      navigate("/");
+      navigate("/dashboard");
     }
   };
 

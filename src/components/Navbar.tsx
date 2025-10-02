@@ -50,11 +50,16 @@ const Navbar = () => {
               </Button>
             </>
           ) : (
-            <Link to="/auth">
-              <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
-                Sign In
-              </Button>
-            </Link>
+            <>
+              <Link to="/auth">
+                <Button variant="ghost">Sign In</Button>
+              </Link>
+              <Link to="/auth">
+                <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
           )}
         </div>
       </div>
