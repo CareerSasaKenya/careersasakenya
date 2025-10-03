@@ -32,9 +32,12 @@ const Navbar = () => {
         </Link>
         
         <div className="flex items-center gap-4">
-          <Link to="/jobs">
-            <Button variant="ghost">Browse Jobs</Button>
-          </Link>
+        <Link to="/jobs">
+          <Button variant="ghost">Browse Jobs</Button>
+        </Link>
+        <Link to="/blog">
+          <Button variant="ghost">Blog</Button>
+        </Link>
           {user ? (
             <>
               <Link to="/dashboard">
