@@ -47,11 +47,15 @@ const Auth = () => {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/`,
+        data: {
+          role: role,
+        },
       },
     });
 
+    setLoading(false);
+
     if (error) {
-      setLoading(false);
       if (error.message.includes("already registered")) {
         toast.error("This email is already registered. Please sign in instead.");
       } else {
@@ -60,21 +64,8 @@ const Auth = () => {
       return;
     }
 
-    // Insert user role
-    if (data.user) {
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .insert({ user_id: data.user.id, role });
-
-      setLoading(false);
-
-      if (roleError) {
-        toast.error("Failed to set user role. Please contact support.");
-      } else {
-        toast.success("Account created successfully! You can now sign in.");
-        setPassword("");
-      }
-    }
+    toast.success("Account created successfully! You can now sign in.");
+    setPassword("");
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
