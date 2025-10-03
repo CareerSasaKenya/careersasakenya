@@ -10,7 +10,14 @@ const Jobs = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("jobs")
-        .select("*")
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo
+          )
+        `)
         .order("created_at", { ascending: false });
       
       if (error) throw error;
@@ -43,10 +50,12 @@ const Jobs = () => {
                 key={job.id}
                 id={job.id}
                 title={job.title}
-                company={job.company}
+                company={job.companies?.name || job.company}
                 location={job.location}
                 description={job.description}
                 salary={job.salary || undefined}
+                companyId={job.company_id}
+                companyLogo={job.companies?.logo}
               />
             ))}
           </div>

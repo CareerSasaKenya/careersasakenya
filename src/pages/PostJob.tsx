@@ -1,29 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Info } from "lucide-react";
 
 const PostJob = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, loading } = useAuth();
+  const { role } = useUserRole();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      toast.error("Please sign in to post jobs");
-      navigate("/auth");
-    }
-  }, [user, loading, navigate]);
-  
   const [formData, setFormData] = useState({
     title: "",
     company: "",
@@ -32,12 +29,74 @@ const PostJob = () => {
     salary: "",
     apply_link: "",
     apply_email: "",
+    company_id: "",
   });
+
+  useEffect(() => {
+    if (!loading && !user) {
+      toast.error("Please sign in to post jobs");
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  const { data: userCompany } = useQuery({
+    queryKey: ["user-company", user?.id],
+    queryFn: async () => {
+      if (!user || role === "admin") return null;
+      
+      const { data, error } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user && role === "employer",
+  });
+
+  const { data: allCompanies } = useQuery({
+    queryKey: ["all-companies"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("companies")
+        .select("*")
+        .order("name");
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: role === "admin",
+  });
+
+  useEffect(() => {
+    if (userCompany && role === "employer") {
+      setFormData(prev => ({
+        ...prev,
+        company: userCompany.name,
+        company_id: userCompany.id,
+      }));
+    }
+  }, [userCompany, role]);
 
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase.from("jobs").insert([{ ...data, user_id: user.id }]);
+      
+      const jobData: any = {
+        title: data.title,
+        company: data.company,
+        location: data.location,
+        description: data.description,
+        salary: data.salary || null,
+        apply_link: data.apply_link || null,
+        apply_email: data.apply_email || null,
+        user_id: user.id,
+        company_id: data.company_id || null,
+      };
+
+      const { error } = await supabase.from("jobs").insert([jobData]);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -56,6 +115,11 @@ const PostJob = () => {
     
     if (!formData.title || !formData.company || !formData.location || !formData.description) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (role === "employer" && !userCompany) {
+      toast.error("Please create a company profile first from your dashboard");
       return;
     }
     
@@ -99,6 +163,44 @@ const PostJob = () => {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {role === "employer" && !userCompany && (
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Please create a company profile first from your dashboard before posting jobs.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {role === "admin" && (
+                <div className="space-y-2">
+                  <Label htmlFor="company_id">Attach to Company (Optional)</Label>
+                  <Select
+                    value={formData.company_id}
+                    onValueChange={(value) => {
+                      const selectedCompany = allCompanies?.find(c => c.id === value);
+                      setFormData({
+                        ...formData,
+                        company_id: value,
+                        company: selectedCompany?.name || formData.company,
+                      });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a company or leave blank for direct listing" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Company (Direct Listing)</SelectItem>
+                      {allCompanies?.map((company) => (
+                        <SelectItem key={company.id} value={company.id}>
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="title">Job Title *</Label>
                 <Input
@@ -116,11 +218,17 @@ const PostJob = () => {
                 <Input
                   id="company"
                   name="company"
-                  value={formData.company}
+                  value={userCompany?.name || formData.company}
                   onChange={handleChange}
                   placeholder="e.g., TechCorp Kenya"
                   required
+                  disabled={role === "employer" && !!userCompany}
                 />
+                {role === "employer" && userCompany && (
+                  <p className="text-xs text-muted-foreground">
+                    Using your company profile: {userCompany.name}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -190,7 +298,7 @@ const PostJob = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || (role === "employer" && !userCompany)}
               >
                 {mutation.isPending ? (
                   <>

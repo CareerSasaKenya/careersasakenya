@@ -6,7 +6,8 @@ import { useUserRole } from "@/hooks/useUserRole";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MapPin, Building2, DollarSign, Mail, ExternalLink, Loader2, Bookmark, CheckCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Building2, DollarSign, Mail, ExternalLink, Loader2, Bookmark, CheckCircle, FileText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 const JobDetails = () => {
@@ -20,7 +21,14 @@ const JobDetails = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("jobs")
-        .select("*")
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo
+          )
+        `)
         .eq("id", id)
         .maybeSingle();
       
@@ -154,10 +162,24 @@ const JobDetails = () => {
           <CardHeader className="border-b bg-muted/30">
             <CardTitle className="text-3xl mb-4">{job.title}</CardTitle>
             <div className="flex flex-wrap gap-4 text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-primary" />
-                <span className="text-lg">{job.company}</span>
-              </div>
+              {job.company_id && job.companies ? (
+                <Link 
+                  to={`/companies/${job.company_id}`}
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
+                >
+                  {job.companies.logo && (
+                    <img src={job.companies.logo} alt={job.companies.name} className="h-6 w-6 object-contain" />
+                  )}
+                  <Building2 className="h-5 w-5 text-primary" />
+                  <span className="text-lg">{job.companies.name}</span>
+                </Link>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-lg">{job.company}</span>
+                  <Badge variant="secondary">Direct Listing</Badge>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
                 <span className="text-lg">{job.location}</span>
