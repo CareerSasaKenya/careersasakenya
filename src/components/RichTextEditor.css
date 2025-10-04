@@ -1,0 +1,76 @@
+.rich-text-editor {
+  margin: 1rem 0;
+}
+
+/* Quill editor customization */
+.rich-text-editor .ql-container {
+  min-height: 300px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.rich-text-editor .ql-editor {
+  min-height: 300px;
+}
+
+.rich-text-editor .ql-toolbar {
+  background: #f9fafb;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px 6px 0 0;
+}
+
+.rich-text-editor .ql-container {
+  border: 1px solid #d1d5db !important;
+  border-top: none !important;
+  border-radius: 0 0 6px 6px;
+}
+
+.rich-text-editor .ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: normal;
+}
+
+/* Fallback textarea styling */
+.rich-text-editor-fallback {
+  position: relative;
+}
+
+.rich-text-editor-fallback textarea {
+  resize: vertical;
+}
+
+.rich-text-editor-fallback textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.editor-notice {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.editor-notice p {
+  margin: 0.25rem 0;
+  color: #1e40af;
+}
+
+.editor-notice strong {
+  font-weight: 600;
+}
+
+.editor-notice code {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: #1e3a8a;
+  color: #dbeafe;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+

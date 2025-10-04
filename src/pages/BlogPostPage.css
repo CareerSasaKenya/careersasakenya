@@ -1,0 +1,258 @@
+.blog-post-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 2rem;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #1d4ed8;
+}
+
+.blog-post {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 3rem;
+}
+
+.blog-post-image {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.blog-post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-post-header {
+  padding: 2rem 2rem 1rem;
+}
+
+.blog-post-category {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.375rem 1rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+}
+
+.blog-post-title {
+  font-size: 2.5rem;
+  color: #111827;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.blog-post-meta {
+  display: flex;
+  gap: 1.5rem;
+  color: #6b7280;
+  font-size: 0.95rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.blog-post-author {
+  font-style: italic;
+}
+
+.blog-post-content {
+  padding: 2rem;
+  color: #374151;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.blog-post-content h1,
+.blog-post-content h2,
+.blog-post-content h3 {
+  color: #111827;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.blog-post-content h1 {
+  font-size: 2rem;
+}
+
+.blog-post-content h2 {
+  font-size: 1.75rem;
+}
+
+.blog-post-content h3 {
+  font-size: 1.5rem;
+}
+
+.blog-post-content p {
+  margin-bottom: 1.5rem;
+}
+
+.blog-post-content strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.blog-post-content em {
+  font-style: italic;
+}
+
+.blog-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1.5rem 2rem 2rem;
+  align-items: center;
+}
+
+.blog-post-tags strong {
+  color: #374151;
+  margin-right: 0.5rem;
+}
+
+.blog-post-tag {
+  background: #f3f4f6;
+  color: #4b5563;
+  padding: 0.375rem 0.875rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Related Posts Section */
+.related-posts {
+  margin-top: 4rem;
+}
+
+.related-posts h2 {
+  font-size: 1.75rem;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.related-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.related-post-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.related-post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.related-post-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.related-post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.related-post-content {
+  padding: 1rem;
+}
+
+.related-post-category {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.625rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.related-post-title {
+  font-size: 1rem;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.related-post-date {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .blog-post-container {
+    padding: 1rem 0;
+  }
+
+  .blog-post-image {
+    height: 250px;
+  }
+
+  .blog-post-header {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .blog-post-title {
+    font-size: 1.75rem;
+  }
+
+  .blog-post-content {
+    padding: 1.5rem;
+    font-size: 1rem;
+  }
+
+  .blog-post-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .blog-post-content h2 {
+    font-size: 1.35rem;
+  }
+
+  .blog-post-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .related-posts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+

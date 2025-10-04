@@ -1,0 +1,233 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  color: #111827;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #9ca3af;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.applicant-info {
+  background: #f0f7ff;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #dbeafe;
+}
+
+.applicant-info p {
+  margin: 0;
+  color: #1e40af;
+  font-size: 0.95rem;
+}
+
+.alert {
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background-color: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.success-message {
+  text-align: center;
+}
+
+.success-icon {
+  width: 4rem;
+  height: 4rem;
+  background-color: #d1fae5;
+  color: #059669;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1rem;
+  font-weight: bold;
+}
+
+.success-message h3 {
+  color: #111827;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.success-message p {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.contact-info {
+  background-color: #eff6ff;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.contact-info strong {
+  color: #2563eb;
+  font-size: 1.1rem;
+}
+
+.note {
+  margin-top: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Profile Section Styles */
+.profile-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: #3b82f6;
+}
+
+.profile-info {
+  margin-left: 1.75rem;
+}
+
+.profile-info p {
+  margin: 0.25rem 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.profile-info a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.profile-info a:hover {
+  text-decoration: underline;
+}
+
+.template-preview {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.4;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.application-checklist {
+  text-align: left;
+  max-width: 400px;
+  margin: 1rem auto;
+  background-color: #f9fafb;
+  padding: 1rem 1rem 1rem 2rem;
+  border-radius: 6px;
+}
+
+.application-checklist li {
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+
+@media (max-width: 640px) {
+  .modal {
+    max-height: 95vh;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+}
+
