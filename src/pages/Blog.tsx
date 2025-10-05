@@ -63,22 +63,22 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 py-12">
-        <header className="mb-12 text-center animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">Career Blog</h1>
-          <p className="text-muted-foreground text-xl max-w-2xl mx-auto">
+      <main className="container mx-auto px-4 py-8 md:py-12">
+        <header className="mb-8 md:mb-12 text-center animate-fade-in">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 md:mb-4 bg-gradient-primary bg-clip-text text-transparent px-4">Career Blog</h1>
+          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto px-4">
             Latest career insights, job market trends, and company updates
           </p>
         </header>
 
-        <div className="mb-10 flex flex-col sm:flex-row gap-4 animate-slide-up">
+        <div className="mb-8 md:mb-10 flex flex-col sm:flex-row gap-3 md:gap-4 animate-slide-up">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
             <Input
               placeholder="Search articles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 h-12 text-base rounded-xl border-2"
+              className="pl-10 md:pl-12 h-11 md:h-12 text-base rounded-xl border-2"
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -86,6 +86,7 @@ const Blog = () => {
               variant={selectedCategory === null ? "default" : "outline"}
               onClick={() => setSelectedCategory(null)}
               size="lg"
+              className="text-sm md:text-base"
             >
               All
             </Button>
@@ -95,6 +96,7 @@ const Blog = () => {
                 variant={selectedCategory === category ? "default" : "outline"}
                 onClick={() => setSelectedCategory(category as string)}
                 size="lg"
+                className="text-sm md:text-base"
               >
                 {category}
               </Button>
@@ -118,7 +120,7 @@ const Blog = () => {
             <p className="text-muted-foreground text-lg">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 animate-slide-up">
             {filteredPosts.map((post, index) => (
               <Link key={post.id} to={`/blog/${post.slug}`} style={{ animationDelay: `${index * 50}ms` }} className="animate-fade-in">
                 <Card className="group h-full hover:shadow-xl transition-all duration-300 hover:scale-[1.02] overflow-hidden border-border/50 hover:border-primary/50">

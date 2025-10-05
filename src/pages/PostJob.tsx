@@ -150,19 +150,19 @@ const PostJob = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="container mx-auto px-4 py-6 md:py-8 max-w-3xl">
         <Card className="border-border">
-          <CardHeader>
-            <CardTitle className="text-3xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <CardHeader className="px-4 md:px-6">
+            <CardTitle className="text-2xl md:text-3xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Post a New Job
             </CardTitle>
-            <CardDescription className="text-base">
+            <CardDescription className="text-sm md:text-base">
               Fill in the details below to post a job opening
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <CardContent className="px-4 md:px-6">
+            <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
               {role === "employer" && !userCompany && (
                 <Alert>
                   <Info className="h-4 w-4" />

@@ -4,6 +4,7 @@ import { Briefcase, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import MobileNav from "./MobileNav";
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -21,17 +22,18 @@ const Navbar = () => {
 
   return (
     <nav className="border-b border-border/50 bg-card/80 sticky top-0 z-50 backdrop-blur-xl">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="p-2.5 rounded-xl bg-gradient-primary shadow-glow transition-all duration-300 group-hover:shadow-xl group-hover:scale-110">
-            <Briefcase className="h-6 w-6 text-primary-foreground" />
+      <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2 md:gap-3 group">
+          <div className="p-2 md:p-2.5 rounded-xl bg-gradient-primary shadow-glow transition-all duration-300 group-hover:shadow-xl group-hover:scale-110">
+            <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <span className="text-xl md:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             CareerSasa
           </span>
         </Link>
         
-        <div className="flex items-center gap-2">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-2">
           <Link to="/jobs">
             <Button variant="ghost">Browse Jobs</Button>
           </Link>
@@ -59,13 +61,16 @@ const Navbar = () => {
                 <Button variant="ghost">Sign In</Button>
               </Link>
               <Link to="/auth">
-                <Button variant="gradient" size="lg">
+                <Button variant="gradient" size="lg" className="hidden lg:flex">
                   Get Started
                 </Button>
               </Link>
             </>
           )}
         </div>
+
+        {/* Mobile Navigation */}
+        <MobileNav />
       </div>
     </nav>
   );
