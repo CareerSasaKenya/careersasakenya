@@ -29,40 +29,46 @@ const Jobs = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+      <div className="container mx-auto px-4 py-12">
+        <div className="mb-12 text-center animate-fade-in">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
             Browse Jobs
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Discover your next career opportunity
+          <p className="text-muted-foreground text-xl max-w-2xl mx-auto">
+            Discover your next career opportunity from top companies in Kenya
           </p>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <div className="flex flex-col items-center justify-center py-32">
+            <Loader2 className="h-16 w-16 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Loading opportunities...</p>
           </div>
         ) : jobs && jobs.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {jobs.map((job) => (
-              <JobCard
-                key={job.id}
-                id={job.id}
-                title={job.title}
-                company={job.companies?.name || job.company}
-                location={job.location}
-                description={job.description}
-                salary={job.salary || undefined}
-                companyId={job.company_id}
-                companyLogo={job.companies?.logo}
-              />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up">
+            {jobs.map((job, index) => (
+              <div key={job.id} style={{ animationDelay: `${index * 50}ms` }} className="animate-fade-in">
+                <JobCard
+                  id={job.id}
+                  title={job.title}
+                  company={job.companies?.name || job.company}
+                  location={job.location}
+                  description={job.description}
+                  salary={job.salary || undefined}
+                  companyId={job.company_id}
+                  companyLogo={job.companies?.logo}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <p className="text-xl text-muted-foreground">
-              No jobs posted yet. Check back soon!
+          <div className="text-center py-32 animate-fade-in">
+            <div className="inline-flex p-6 rounded-full bg-muted mb-6">
+              <Loader2 className="h-16 w-16 text-muted-foreground" />
+            </div>
+            <p className="text-2xl font-semibold mb-2">No jobs available yet</p>
+            <p className="text-muted-foreground text-lg">
+              Check back soon for new opportunities!
             </p>
           </div>
         )}

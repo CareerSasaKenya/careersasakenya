@@ -20,24 +20,24 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="border-b bg-card sticky top-0 z-50 backdrop-blur-sm bg-card/80">
+    <nav className="border-b border-border/50 bg-card/80 sticky top-0 z-50 backdrop-blur-xl">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="p-2 rounded-lg bg-gradient-primary">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="p-2.5 rounded-xl bg-gradient-primary shadow-glow transition-all duration-300 group-hover:shadow-xl group-hover:scale-110">
             <Briefcase className="h-6 w-6 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             CareerSasa
           </span>
         </Link>
         
-        <div className="flex items-center gap-4">
-        <Link to="/jobs">
-          <Button variant="ghost">Browse Jobs</Button>
-        </Link>
-        <Link to="/blog">
-          <Button variant="ghost">Blog</Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link to="/jobs">
+            <Button variant="ghost">Browse Jobs</Button>
+          </Link>
+          <Link to="/blog">
+            <Button variant="ghost">Blog</Button>
+          </Link>
           {user ? (
             <>
               <Link to="/dashboard">
@@ -48,6 +48,7 @@ const Navbar = () => {
                 size="icon"
                 onClick={handleSignOut}
                 title="Sign Out"
+                className="hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -58,8 +59,8 @@ const Navbar = () => {
                 <Button variant="ghost">Sign In</Button>
               </Link>
               <Link to="/auth">
-                <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
-                  Sign Up
+                <Button variant="gradient" size="lg">
+                  Get Started
                 </Button>
               </Link>
             </>
