@@ -264,7 +264,7 @@ VALUES
   ('Kibos', 17, 'kibos'),
   ('Kisumu Town', 17, 'kisumu-town'),
   ('Kondele', 17, 'kondele'),
-  ('Manyatta', 17, 'manyatta'),
+  ('Manyatta', 17, 'manyatta-kisumu'),
   ('Migosi', 17, 'migosi')
 ON CONFLICT (name, county_id) DO NOTHING;
 
@@ -276,7 +276,7 @@ VALUES
   ('Mutomo', 18, 'mutomo'),
   ('Kyuso', 18, 'kyuso'),
   ('Kwa Vonza', 18, 'kwa-vonza'),
-  ('Kibwezi', 18, 'kibwezi'),
+  ('Kibwezi', 18, 'kibwezi-kitui'),
   ('Ikutha', 18, 'ikutha'),
   ('Kitui Town', 18, 'kitui-town'),
   ('Machakos-border towns', 18, 'machakos-border-towns')
@@ -394,7 +394,7 @@ VALUES
   ('Awendo', 27, 'awendo'),
   ('Rongo', 27, 'rongo'),
   ('Kehancha', 27, 'kehancha'),
-  ('Oyugis', 27, 'oyugis'),
+  ('Oyugis', 27, 'oyugis-migori'),
   ('Macalder', 27, 'macalder'),
   ('Migori Town', 27, 'migori-town')
 ON CONFLICT (name, county_id) DO NOTHING;
