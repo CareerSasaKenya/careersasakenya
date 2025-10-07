@@ -379,7 +379,7 @@ INSERT INTO public.towns (name, county_id, slug)
 VALUES
   ('Meru Town', 26, 'meru-town'),
   ('Maua', 26, 'maua'),
-  ('Timau', 26, 'timau'),
+  ('Timau', 26, 'timau-meru'),
   ('Chuka', 26, 'chuka-meru'),
   ('Imenti', 26, 'imenti'),
   ('Kianjai', 26, 'kianjai'),
