@@ -647,7 +647,7 @@ ON CONFLICT (name, county_id) DO NOTHING;
 INSERT INTO public.towns (name, county_id, slug)
 VALUES
   ('Kapenguria', 47, 'kapenguria'),
-  ('Makutano', 47, 'makutano'),
+  ('Makutano', 47, 'makutano-west-pokot'),
   ('Ortum', 47, 'ortum'),
   ('Kacheliba', 47, 'kacheliba'),
   ('Sigor', 47, 'sigor'),
