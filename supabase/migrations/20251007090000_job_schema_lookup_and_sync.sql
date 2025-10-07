@@ -84,15 +84,7 @@ ALTER TABLE public.jobs
   ADD COLUMN IF NOT EXISTS application_deadline DATE,
   ADD COLUMN IF NOT EXISTS posted_date DATE;
 
--- Optionally convert salary_currency to enum if values are safe (default was 'KES')
-DO $$ BEGIN
-  ALTER TABLE public.jobs
-  ALTER COLUMN salary_currency TYPE public.currency_code USING salary_currency::public.currency_code,
-  ALTER COLUMN salary_currency SET DEFAULT 'KES';
-EXCEPTION WHEN invalid_text_representation THEN
-  -- Leave as TEXT if conversion fails
-  RAISE NOTICE 'Skipping salary_currency enum conversion due to incompatible values.';
-END $$;
+-- Keep salary_currency as-is (TEXT) to avoid data conversion issues; default remains handled by prior migration
 
 -- Keep application_deadline in sync with valid_through (date part)
 CREATE OR REPLACE FUNCTION public.sync_application_deadline()
