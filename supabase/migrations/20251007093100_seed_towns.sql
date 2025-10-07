@@ -574,7 +574,7 @@ ON CONFLICT (name, county_id) DO NOTHING;
 -- 41. Tharaka–Nithi (county_id = 41)
 INSERT INTO public.towns (name, county_id, slug)
 VALUES
-  ('Chuka', 41, 'chuka-town'),
+  ('Chuka', 41, 'chuka'),
   ('Marimanti', 41, 'marimanti'),
   ('Nkondi', 41, 'nkondi'),
   ('Itumbe', 41, 'itumbe'),
