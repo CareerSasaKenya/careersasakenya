@@ -22,8 +22,8 @@ CREATE INDEX IF NOT EXISTS idx_jobs_tags ON public.jobs USING gin(tags);
 
 -- Optional partial index to accelerate queries for currently active jobs
 -- Note: queries should reference the same predicate to leverage this index
-CREATE INDEX IF NOT EXISTS idx_jobs_active_now
-ON public.jobs(valid_through)
-WHERE status = 'active' AND (valid_through IS NULL OR valid_through >= now());
+-- Use a composite btree index instead (functions like now() are not IMMUTABLE)
+CREATE INDEX IF NOT EXISTS idx_jobs_status_valid_through
+ON public.jobs(status, valid_through);
 
 
