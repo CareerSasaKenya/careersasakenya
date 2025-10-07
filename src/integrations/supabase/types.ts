@@ -132,46 +132,185 @@ export type Database = {
       }
       jobs: {
         Row: {
+          applicant_location_requirements: string | null
+          application_url: string | null
+          applications_count: number | null
           apply_email: string | null
           apply_link: string | null
           company: string
           company_id: string | null
           created_at: string
+          date_posted: string | null
           description: string
+          direct_apply: boolean | null
+          education_requirements: string | null
+          employment_type: Database["public"]["Enums"]["employment_type"] | null
+          experience_level:
+            | Database["public"]["Enums"]["experience_level"]
+            | null
+          hiring_organization_logo: string | null
+          hiring_organization_name: string | null
+          hiring_organization_url: string | null
           id: string
+          identifier: string | null
+          industry: string | null
+          job_function: string | null
+          job_location_address: string | null
+          job_location_city: string | null
+          job_location_country: string | null
+          job_location_county: string | null
+          job_location_type:
+            | Database["public"]["Enums"]["job_location_type"]
+            | null
+          job_slug: string | null
+          language_requirements: string | null
+          license_requirements: string | null
           location: string
+          posted_by: Database["public"]["Enums"]["posted_by"] | null
+          practice_area: string | null
+          preferred_qualifications: Json | null
+          project_type: string | null
+          required_qualifications: Json | null
           salary: string | null
+          salary_currency: string | null
+          salary_max: number | null
+          salary_min: number | null
+          salary_period: Database["public"]["Enums"]["salary_period"] | null
+          software_skills: Json | null
+          specialization: string | null
+          status: Database["public"]["Enums"]["job_status"] | null
+          tags: Json | null
           title: string
           updated_at: string
           user_id: string | null
+          valid_through: string | null
+          views_count: number | null
+          visa_sponsorship:
+            | Database["public"]["Enums"]["visa_sponsorship"]
+            | null
+          work_schedule: string | null
         }
         Insert: {
+          applicant_location_requirements?: string | null
+          application_url?: string | null
+          applications_count?: number | null
           apply_email?: string | null
           apply_link?: string | null
           company: string
           company_id?: string | null
           created_at?: string
+          date_posted?: string | null
           description: string
+          direct_apply?: boolean | null
+          education_requirements?: string | null
+          employment_type?:
+            | Database["public"]["Enums"]["employment_type"]
+            | null
+          experience_level?:
+            | Database["public"]["Enums"]["experience_level"]
+            | null
+          hiring_organization_logo?: string | null
+          hiring_organization_name?: string | null
+          hiring_organization_url?: string | null
           id?: string
+          identifier?: string | null
+          industry?: string | null
+          job_function?: string | null
+          job_location_address?: string | null
+          job_location_city?: string | null
+          job_location_country?: string | null
+          job_location_county?: string | null
+          job_location_type?:
+            | Database["public"]["Enums"]["job_location_type"]
+            | null
+          job_slug?: string | null
+          language_requirements?: string | null
+          license_requirements?: string | null
           location: string
+          posted_by?: Database["public"]["Enums"]["posted_by"] | null
+          practice_area?: string | null
+          preferred_qualifications?: Json | null
+          project_type?: string | null
+          required_qualifications?: Json | null
           salary?: string | null
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: Database["public"]["Enums"]["salary_period"] | null
+          software_skills?: Json | null
+          specialization?: string | null
+          status?: Database["public"]["Enums"]["job_status"] | null
+          tags?: Json | null
           title: string
           updated_at?: string
           user_id?: string | null
+          valid_through?: string | null
+          views_count?: number | null
+          visa_sponsorship?:
+            | Database["public"]["Enums"]["visa_sponsorship"]
+            | null
+          work_schedule?: string | null
         }
         Update: {
+          applicant_location_requirements?: string | null
+          application_url?: string | null
+          applications_count?: number | null
           apply_email?: string | null
           apply_link?: string | null
           company?: string
           company_id?: string | null
           created_at?: string
+          date_posted?: string | null
           description?: string
+          direct_apply?: boolean | null
+          education_requirements?: string | null
+          employment_type?:
+            | Database["public"]["Enums"]["employment_type"]
+            | null
+          experience_level?:
+            | Database["public"]["Enums"]["experience_level"]
+            | null
+          hiring_organization_logo?: string | null
+          hiring_organization_name?: string | null
+          hiring_organization_url?: string | null
           id?: string
+          identifier?: string | null
+          industry?: string | null
+          job_function?: string | null
+          job_location_address?: string | null
+          job_location_city?: string | null
+          job_location_country?: string | null
+          job_location_county?: string | null
+          job_location_type?:
+            | Database["public"]["Enums"]["job_location_type"]
+            | null
+          job_slug?: string | null
+          language_requirements?: string | null
+          license_requirements?: string | null
           location?: string
+          posted_by?: Database["public"]["Enums"]["posted_by"] | null
+          practice_area?: string | null
+          preferred_qualifications?: Json | null
+          project_type?: string | null
+          required_qualifications?: Json | null
           salary?: string | null
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: Database["public"]["Enums"]["salary_period"] | null
+          software_skills?: Json | null
+          specialization?: string | null
+          status?: Database["public"]["Enums"]["job_status"] | null
+          tags?: Json | null
           title?: string
           updated_at?: string
           user_id?: string | null
+          valid_through?: string | null
+          views_count?: number | null
+          visa_sponsorship?:
+            | Database["public"]["Enums"]["visa_sponsorship"]
+            | null
+          work_schedule?: string | null
         }
         Relationships: [
           {
@@ -252,6 +391,20 @@ export type Database = {
     }
     Enums: {
       app_role: "employer" | "candidate" | "admin"
+      employment_type:
+        | "FULL_TIME"
+        | "PART_TIME"
+        | "CONTRACTOR"
+        | "INTERN"
+        | "TEMPORARY"
+        | "VOLUNTEER"
+        | "PER_DIEM"
+      experience_level: "Entry" | "Mid" | "Senior" | "Managerial" | "Internship"
+      job_location_type: "ON_SITE" | "REMOTE" | "HYBRID"
+      job_status: "active" | "expired" | "draft" | "pending"
+      posted_by: "admin" | "employer"
+      salary_period: "YEAR" | "MONTH" | "WEEK" | "DAY" | "HOUR"
+      visa_sponsorship: "Yes" | "No" | "Not Applicable"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -380,6 +533,21 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["employer", "candidate", "admin"],
+      employment_type: [
+        "FULL_TIME",
+        "PART_TIME",
+        "CONTRACTOR",
+        "INTERN",
+        "TEMPORARY",
+        "VOLUNTEER",
+        "PER_DIEM",
+      ],
+      experience_level: ["Entry", "Mid", "Senior", "Managerial", "Internship"],
+      job_location_type: ["ON_SITE", "REMOTE", "HYBRID"],
+      job_status: ["active", "expired", "draft", "pending"],
+      posted_by: ["admin", "employer"],
+      salary_period: ["YEAR", "MONTH", "WEEK", "DAY", "HOUR"],
+      visa_sponsorship: ["Yes", "No", "Not Applicable"],
     },
   },
 } as const
