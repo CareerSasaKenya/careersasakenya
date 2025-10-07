@@ -491,7 +491,7 @@ ON CONFLICT (name, county_id) DO NOTHING;
 -- 34. Nyamira (county_id = 34)
 INSERT INTO public.towns (name, county_id, slug)
 VALUES
-  ('Nyamira', 34, 'nyamira'),
+  ('Nyamira', 34, 'nyamira-nyamira'),
   ('Keroka', 34, 'keroka'),
   ('Manga', 34, 'manga'),
   ('Kenyenya', 34, 'kenyenya'),
