@@ -181,7 +181,7 @@ INSERT INTO public.towns (name, county_id, slug)
 VALUES
   ('Kericho', 12, 'kericho'),
   ('Londiani', 12, 'londiani'),
-  ('Litein', 12, 'litein'),
+  ('Litein', 12, 'litein-kericho'),
   ('Ainamoi', 12, 'ainamoi'),
   ('Kipkelion', 12, 'kipkelion'),
   ('Kapkatet', 12, 'kapkatet'),
@@ -217,7 +217,7 @@ VALUES
   ('Mariakani', 14, 'mariakani'),
   ('Kaloleni', 14, 'kaloleni'),
   ('Kilifi Town', 14, 'kilifi-town'),
-  ('Mpeketoni', 14, 'mpeketoni'),
+  ('Mpeketoni', 14, 'mpeketoni-kilifi'),
   ('Rabai', 14, 'rabai'),
   ('Ganze', 14, 'ganze'),
   ('Marafa', 14, 'marafa')
@@ -330,7 +330,7 @@ VALUES
   ('Kathiani', 22, 'kathiani'),
   ('Athi River', 22, 'athi-river'),
   ('Masii', 22, 'masii'),
-  ('Emali', 22, 'emali'),
+  ('Emali', 22, 'emali-machakos'),
   ('Machakos Town', 22, 'machakos-town')
 ON CONFLICT (name, county_id) DO NOTHING;
 
@@ -380,10 +380,10 @@ VALUES
   ('Meru Town', 26, 'meru-town'),
   ('Maua', 26, 'maua'),
   ('Timau', 26, 'timau'),
-  ('Chuka', 26, 'chuka'),
+  ('Chuka', 26, 'chuka-meru'),
   ('Imenti', 26, 'imenti'),
   ('Kianjai', 26, 'kianjai'),
-  ('Nkubu', 26, 'nkubu'),
+  ('Nkubu', 26, 'nkubu-meru'),
   ('Buuri', 26, 'buuri')
 ON CONFLICT (name, county_id) DO NOTHING;
 
@@ -456,7 +456,7 @@ VALUES
   ('Molo', 31, 'molo'),
   ('Subukia', 31, 'subukia'),
   ('Njoro', 31, 'njoro'),
-  ('Eldama Ravine', 31, 'eldama-ravine'),
+  ('Eldama Ravine', 31, 'eldama-ravine-nakuru'),
   ('Bahati', 31, 'bahati'),
   ('Gilgil Town', 31, 'gilgil-town'),
   ('Rongai', 31, 'rongai'),
@@ -502,7 +502,7 @@ ON CONFLICT (name, county_id) DO NOTHING;
 INSERT INTO public.towns (name, county_id, slug)
 VALUES
   ('Ol Kalou', 35, 'ol-kalou'),
-  ('Nyahururu', 35, 'nyahururu'),
+  ('Nyahururu', 35, 'nyahururu-nyandarua'),
   ('Kinangop', 35, 'kinangop'),
   ('Ol Kalou Town', 35, 'ol-kalou-town'),
   ('Njabini', 35, 'njabini'),
@@ -515,7 +515,7 @@ VALUES
   ('Nyeri', 36, 'nyeri'),
   ('Karatina', 36, 'karatina'),
   ('Othaya', 36, 'othaya'),
-  ('Nanyuki', 36, 'nanyuki'),
+  ('Nanyuki', 36, 'nanyuki-nyeri'),
   ('Mathira', 36, 'mathira'),
   ('Kieni', 36, 'kieni'),
   ('Chaka', 36, 'chaka'),
@@ -554,7 +554,7 @@ VALUES
   ('Wundanyi', 39, 'wundanyi'),
   ('Taveta', 39, 'taveta'),
   ('Mwatate', 39, 'mwatate'),
-  ('Hola', 39, 'hola'),
+  ('Hola', 39, 'hola-taita-taveta'),
   ('Dawida', 39, 'dawida'),
   ('Mkaani', 39, 'mkaani')
 ON CONFLICT (name, county_id) DO NOTHING;
@@ -574,7 +574,7 @@ ON CONFLICT (name, county_id) DO NOTHING;
 -- 41. Tharaka–Nithi (county_id = 41)
 INSERT INTO public.towns (name, county_id, slug)
 VALUES
-  ('Chuka', 41, 'chuka'),
+  ('Chuka', 41, 'chuka-town'),
   ('Marimanti', 41, 'marimanti'),
   ('Nkondi', 41, 'nkondi'),
   ('Itumbe', 41, 'itumbe'),
@@ -590,7 +590,7 @@ VALUES
   ('Endebess', 42, 'endebess'),
   ('Kiminini', 42, 'kiminini'),
   ('Kwanza', 42, 'kwanza'),
-  ('Turbo', 42, 'turbo'),
+  ('Turbo', 42, 'turbo-trans-nzoia'),
   ('Kitale Town', 42, 'kitale-town')
 ON CONFLICT (name, county_id) DO NOTHING;
 
