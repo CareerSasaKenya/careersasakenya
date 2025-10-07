@@ -14,6 +14,10 @@ interface Job {
   company: string;
   location: string;
   created_at: string;
+  employment_type: string;
+  status: string;
+  industry: string;
+  posted_by: string;
 }
 
 interface User {
@@ -34,7 +38,7 @@ const AdminDashboard = () => {
 
   const fetchData = async () => {
     const [jobsResult, usersResult] = await Promise.all([
-      supabase.from("jobs").select("id, title, company, location, created_at").order("created_at", { ascending: false }),
+      supabase.from("jobs").select("id, title, company, location, created_at, employment_type, status, industry, posted_by").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("id, user_id, role, created_at").order("created_at", { ascending: false }),
     ]);
 

@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Briefcase, Pencil, Trash2 } from "lucide-react";
+import { Plus, Briefcase, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import CompanyProfileForm from "@/components/CompanyProfileForm";
 
@@ -16,6 +17,10 @@ interface Job {
   company: string;
   location: string;
   created_at: string;
+  employment_type: string;
+  status: string;
+  applications_count: number;
+  views_count: number;
 }
 
 const EmployerDashboard = () => {
@@ -32,7 +37,7 @@ const EmployerDashboard = () => {
 
     const { data, error } = await supabase
       .from("jobs")
-      .select("id, title, company, location, created_at")
+      .select("id, title, company, location, created_at, employment_type, status, applications_count, views_count")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -94,8 +99,10 @@ const EmployerDashboard = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Title</TableHead>
-                      <TableHead>Company</TableHead>
-                      <TableHead>Location</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Applications</TableHead>
+                      <TableHead>Views</TableHead>
                       <TableHead>Posted</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -103,19 +110,16 @@ const EmployerDashboard = () => {
                   <TableBody>
                     {jobs.map((job) => (
                       <TableRow key={job.id}>
-                        <TableCell className="font-medium">{job.title}</TableCell>
-                        <TableCell>{job.company}</TableCell>
-                        <TableCell>{job.location}</TableCell>
+                        <TableCell className="font-medium">
+                          <Link to={`/jobs/${job.id}`} className="hover:underline">{job.title}</Link>
+                        </TableCell>
+                        <TableCell><Badge variant="outline">{job.employment_type?.replace(/_/g, ' ')}</Badge></TableCell>
+                        <TableCell><Badge variant={job.status === 'active' ? 'default' : 'secondary'}>{job.status}</Badge></TableCell>
+                        <TableCell>{job.applications_count || 0}</TableCell>
+                        <TableCell>{job.views_count || 0}</TableCell>
                         <TableCell>{new Date(job.created_at).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right space-x-2">
-                          <Link to={`/jobs/${job.id}`}>
-                            <Button variant="ghost" size="icon">
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Button variant="ghost" size="icon" onClick={() => handleDelete(job.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleDelete(job.id)}>Delete</Button>
                         </TableCell>
                       </TableRow>
                     ))}
