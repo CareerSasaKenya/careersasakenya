@@ -481,7 +481,7 @@ VALUES
   ('Narok', 33, 'narok'),
   ('Kilgoris', 33, 'kilgoris'),
   ('Ololulung’a', 33, 'ololulunga'),
-  ('Emali', 33, 'emali'),
+  ('Emali', 33, 'emali-narok'),
   ('Loita', 33, 'loita'),
   ('Narok Town', 33, 'narok-town'),
   ('Bissil', 33, 'bissil'),
