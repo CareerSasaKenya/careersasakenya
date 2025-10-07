@@ -382,7 +382,7 @@ VALUES
   ('Timau', 26, 'timau-meru'),
   ('Chuka', 26, 'chuka-meru'),
   ('Imenti', 26, 'imenti'),
-  ('Kianjai', 26, 'kianjai'),
+  ('Kianjai', 26, 'kianjai-meru'),
   ('Nkubu', 26, 'nkubu-meru'),
   ('Buuri', 26, 'buuri')
 ON CONFLICT (name, county_id) DO NOTHING;
