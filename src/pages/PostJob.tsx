@@ -29,7 +29,6 @@ const PostJob = () => {
     company: "",
     description: "",
     company_id: "",
-    
     // Google Job Posting Fields
     valid_through: "",
     employment_type: "FULL_TIME",
@@ -41,7 +40,6 @@ const PostJob = () => {
     applicant_location_requirements: "",
     direct_apply: true,
     application_url: "",
-    
     // STEM/Health/Architecture Fields
     industry: "",
     specialization: "",
@@ -55,23 +53,85 @@ const PostJob = () => {
     experience_level: "Mid",
     language_requirements: "",
     visa_sponsorship: "Not Applicable",
-    
     // Compensation & Schedule
     salary_currency: "KES",
     salary_min: "",
     salary_max: "",
     salary_period: "MONTH",
     work_schedule: "",
-    
     // Application
     apply_link: "",
     apply_email: "",
-    
     // Functional Portal Fields
     tags: "",
     job_function: "",
     status: "active",
   });
+
+  const [selectedCountyId, setSelectedCountyId] = useState<string>("");
+  const [selectedTownId, setSelectedTownId] = useState<string>("");
+
+  const { data: industries } = useQuery({
+    queryKey: ["industries"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("industries")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return (data as { id: number; name: string }[]) || [];
+    },
+  });
+
+  const { data: jobFunctions } = useQuery({
+    queryKey: ["job_functions"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("job_functions")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return (data as { id: number; name: string }[]) || [];
+    },
+  });
+
+  const { data: counties } = useQuery({
+    queryKey: ["counties"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("counties")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return (data as { id: number; name: string }[]) || [];
+    },
+  });
+
+  const { data: towns } = useQuery({
+    queryKey: ["towns", selectedCountyId],
+    queryFn: async () => {
+      if (!selectedCountyId) return [] as { id: number; name: string; county_id: number }[];
+      const { data, error } = await (supabase as any)
+        .from("towns")
+        .select("id, name, county_id")
+        .eq("county_id", Number(selectedCountyId))
+        .order("name");
+      if (error) throw error;
+      return (data as { id: number; name: string; county_id: number }[]) || [];
+    },
+    enabled: !!selectedCountyId,
+  });
+
+  // Keep form location fields in sync with selected county/town
+  useEffect(() => {
+    const countyName = counties?.find(c => String(c.id) === selectedCountyId)?.name || "";
+    setFormData(prev => ({ ...prev, job_location_county: countyName }));
+  }, [selectedCountyId, counties]);
+
+  useEffect(() => {
+    const townName = towns?.find(t => String(t.id) === selectedTownId)?.name || "";
+    setFormData(prev => ({ ...prev, job_location_city: townName }));
+  }, [selectedTownId, towns]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -84,7 +144,7 @@ const PostJob = () => {
     queryKey: ["user-company", user?.id],
     queryFn: async () => {
       if (!user || role === "admin") return null;
-      
+
       const { data, error } = await supabase
         .from("companies")
         .select("*")
@@ -113,7 +173,7 @@ const PostJob = () => {
 
   useEffect(() => {
     if (userCompany && role === "employer") {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         company: userCompany.name,
         company_id: userCompany.id,
@@ -124,7 +184,7 @@ const PostJob = () => {
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       if (!user) throw new Error("Not authenticated");
-      
+
       const jobData: any = {
         // Core fields
         title: data.title,
@@ -134,7 +194,7 @@ const PostJob = () => {
         company_id: data.company_id || null,
         posted_by: role === "admin" ? "admin" : "employer",
         status: data.status,
-        
+
         // Google Job Posting Fields
         valid_through: data.valid_through || null,
         employment_type: data.employment_type,
@@ -145,10 +205,11 @@ const PostJob = () => {
         job_location_city: data.job_location_city || null,
         job_location_address: data.job_location_address || null,
         location: `${data.job_location_city || ''}${data.job_location_county ? ', ' + data.job_location_county : ''}${data.job_location_country ? ', ' + data.job_location_country : ''}`.trim().replace(/^,\s*/, ''),
+
         applicant_location_requirements: data.applicant_location_requirements || null,
         direct_apply: data.direct_apply,
         application_url: data.application_url || null,
-        
+
         // STEM/Health/Architecture Fields
         industry: data.industry || null,
         specialization: data.specialization || null,
@@ -162,20 +223,19 @@ const PostJob = () => {
         experience_level: data.experience_level || null,
         language_requirements: data.language_requirements || null,
         visa_sponsorship: data.visa_sponsorship,
-        
+
         // Compensation & Schedule
         salary_currency: data.salary_currency,
         salary_min: data.salary_min ? parseInt(data.salary_min) : null,
         salary_max: data.salary_max ? parseInt(data.salary_max) : null,
         salary_period: data.salary_period,
-        salary: data.salary_min && data.salary_max ? 
-          `${data.salary_currency} ${data.salary_min} - ${data.salary_max}/${data.salary_period.toLowerCase()}` : null,
+        salary: data.salary_min && data.salary_max ? `${data.salary_currency} ${data.salary_min} - ${data.salary_max}/${data.salary_period.toLowerCase()}` : null,
         work_schedule: data.work_schedule || null,
-        
+
         // Application
         apply_link: data.apply_link || null,
         apply_email: data.apply_email || null,
-        
+
         // Functional Portal Fields
         tags: data.tags ? data.tags.split(',').map((t: string) => t.trim()) : null,
         job_function: data.job_function || null,
@@ -329,10 +389,9 @@ const PostJob = () => {
                           <SelectValue placeholder="Select industry" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="STEM">STEM</SelectItem>
-                          <SelectItem value="Health">Health</SelectItem>
-                          <SelectItem value="Architecture">Architecture</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
+                          {industries?.map(ind => (
+                            <SelectItem key={ind.id} value={ind.name}>{ind.name}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -422,240 +481,6 @@ const PostJob = () => {
                         onChange={handleChange}
                       />
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="job_location_city">City</Label>
-                      <Input
-                        id="job_location_city"
-                        name="job_location_city"
-                        value={formData.job_location_city}
-                        onChange={handleChange}
-                        placeholder="e.g., Nairobi"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="job_location_county">County</Label>
-                      <Input
-                        id="job_location_county"
-                        name="job_location_county"
-                        value={formData.job_location_county}
-                        onChange={handleChange}
-                        placeholder="e.g., Nairobi County"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="job_location_country">Country</Label>
-                      <Input
-                        id="job_location_country"
-                        name="job_location_country"
-                        value={formData.job_location_country}
-                        onChange={handleChange}
-                        placeholder="e.g., Kenya"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="job_location_address">Full Address (Optional)</Label>
-                    <Input
-                      id="job_location_address"
-                      name="job_location_address"
-                      value={formData.job_location_address}
-                      onChange={handleChange}
-                      placeholder="Full street address"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="salary_min">Minimum Salary</Label>
-                      <Input
-                        id="salary_min"
-                        name="salary_min"
-                        type="number"
-                        value={formData.salary_min}
-                        onChange={handleChange}
-                        placeholder="50000"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="salary_max">Maximum Salary</Label>
-                      <Input
-                        id="salary_max"
-                        name="salary_max"
-                        type="number"
-                        value={formData.salary_max}
-                        onChange={handleChange}
-                        placeholder="100000"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="salary_period">Salary Period</Label>
-                      <Select value={formData.salary_period} onValueChange={(value) => setFormData({...formData, salary_period: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="HOUR">Per Hour</SelectItem>
-                          <SelectItem value="DAY">Per Day</SelectItem>
-                          <SelectItem value="WEEK">Per Week</SelectItem>
-                          <SelectItem value="MONTH">Per Month</SelectItem>
-                          <SelectItem value="YEAR">Per Year</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="work_schedule">Work Schedule</Label>
-                    <Input
-                      id="work_schedule"
-                      name="work_schedule"
-                      value={formData.work_schedule}
-                      onChange={handleChange}
-                      placeholder="e.g., Monday-Friday 8:00-17:00"
-                    />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="requirements" className="space-y-4 mt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="education_requirements">Education Requirements</Label>
-                    <Input
-                      id="education_requirements"
-                      name="education_requirements"
-                      value={formData.education_requirements}
-                      onChange={handleChange}
-                      placeholder="e.g., Bachelor's in Civil Engineering"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="required_qualifications">Required Qualifications (comma-separated)</Label>
-                    <Textarea
-                      id="required_qualifications"
-                      name="required_qualifications"
-                      value={formData.required_qualifications}
-                      onChange={handleChange}
-                      placeholder="e.g., 5+ years experience, Project management certification"
-                      className="min-h-[100px]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="preferred_qualifications">Preferred Qualifications (comma-separated)</Label>
-                    <Textarea
-                      id="preferred_qualifications"
-                      name="preferred_qualifications"
-                      value={formData.preferred_qualifications}
-                      onChange={handleChange}
-                      placeholder="e.g., Master's degree, Experience with specific tools"
-                      className="min-h-[100px]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="license_requirements">License Requirements</Label>
-                    <Input
-                      id="license_requirements"
-                      name="license_requirements"
-                      value={formData.license_requirements}
-                      onChange={handleChange}
-                      placeholder="e.g., Registered Nurse License, PE License"
-                    />
-                  </div>
-
-                  {formData.industry === "Health" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="practice_area">Practice Area</Label>
-                      <Input
-                        id="practice_area"
-                        name="practice_area"
-                        value={formData.practice_area}
-                        onChange={handleChange}
-                        placeholder="e.g., Pediatrics, Surgery"
-                      />
-                    </div>
-                  )}
-
-                  {formData.industry === "Architecture" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="project_type">Project Type</Label>
-                      <Input
-                        id="project_type"
-                        name="project_type"
-                        value={formData.project_type}
-                        onChange={handleChange}
-                        placeholder="e.g., Residential, Commercial, Infrastructure"
-                      />
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="software_skills">Software/Technical Skills (comma-separated)</Label>
-                    <Textarea
-                      id="software_skills"
-                      name="software_skills"
-                      value={formData.software_skills}
-                      onChange={handleChange}
-                      placeholder="e.g., AutoCAD, MATLAB, Python, React"
-                      className="min-h-[80px]"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="language_requirements">Language Requirements</Label>
-                      <Input
-                        id="language_requirements"
-                        name="language_requirements"
-                        value={formData.language_requirements}
-                        onChange={handleChange}
-                        placeholder="e.g., English, Kiswahili"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="visa_sponsorship">Visa Sponsorship</Label>
-                      <Select value={formData.visa_sponsorship} onValueChange={(value) => setFormData({...formData, visa_sponsorship: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Yes">Yes</SelectItem>
-                          <SelectItem value="No">No</SelectItem>
-                          <SelectItem value="Not Applicable">Not Applicable</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="job_function">Job Function</Label>
-                    <Input
-                      id="job_function"
-                      name="job_function"
-                      value={formData.job_function}
-                      onChange={handleChange}
-                      placeholder="e.g., Software Engineering, Nursing, Structural Design"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="tags">Tags (comma-separated keywords)</Label>
-                    <Input
-                      id="tags"
-                      name="tags"
-                      value={formData.tags}
-                      onChange={handleChange}
-                      placeholder="e.g., engineering, remote, senior-level"
-                    />
                   </div>
                 </TabsContent>
 

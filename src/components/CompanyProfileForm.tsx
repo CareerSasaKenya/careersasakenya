@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Company {
   id: string;
@@ -18,6 +19,22 @@ interface Company {
   location: string | null;
   size: string | null;
   description: string | null;
+}
+
+interface Industry {
+  id: number;
+  name: string;
+}
+
+interface County {
+  id: number;
+  name: string;
+}
+
+interface Town {
+  id: number;
+  name: string;
+  county_id: number;
 }
 
 const CompanyProfileForm = () => {
@@ -35,6 +52,11 @@ const CompanyProfileForm = () => {
     size: "",
     description: "",
   });
+  const [industries, setIndustries] = useState<Industry[]>([]);
+  const [counties, setCounties] = useState<County[]>([]);
+  const [towns, setTowns] = useState<Town[]>([]);
+  const [selectedCountyId, setSelectedCountyId] = useState<string>("");
+  const [selectedTownId, setSelectedTownId] = useState<string>("");
 
   useEffect(() => {
     if (user) {
@@ -63,6 +85,24 @@ const CompanyProfileForm = () => {
           size: data.size || "",
           description: data.description || "",
         });
+        // Attempt to infer county/town from existing free-text location: "Town, County"
+        if (data.location) {
+          const parts = data.location.split(",").map((p: string) => p.trim());
+          const inferredTown = parts.length > 1 ? parts[0] : "";
+          const inferredCounty = parts.length > 1 ? parts[1] : parts[0];
+          // We'll set after counties/towns load
+          setTimeout(() => {
+            const county = counties.find(c => c.name.toLowerCase() === (inferredCounty || "").toLowerCase());
+            if (county) {
+              setSelectedCountyId(String(county.id));
+              // towns will be loaded by effect; try set town after a short delay
+              setTimeout(() => {
+                const townMatch = towns.find(t => t.name.toLowerCase() === (inferredTown || "").toLowerCase() && String(t.county_id) === String(county.id));
+                if (townMatch) setSelectedTownId(String(townMatch.id));
+              }, 300);
+            }
+          }, 300);
+        }
       }
     } catch (error) {
       console.error("Error fetching company:", error);
@@ -70,6 +110,56 @@ const CompanyProfileForm = () => {
       setLoading(false);
     }
   };
+
+  // Load lookup lists
+  useEffect(() => {
+    const loadLookups = async () => {
+      try {
+        const [industriesRes, countiesRes] = await Promise.all([
+          (supabase as any).from("industries").select("id, name").order("name"),
+          (supabase as any).from("counties").select("id, name").order("name"),
+        ]);
+        if (industriesRes.error) throw industriesRes.error;
+        if (countiesRes.error) throw countiesRes.error;
+        setIndustries((industriesRes.data as any) || []);
+        setCounties((countiesRes.data as any) || []);
+      } catch (err) {
+        console.error("Failed to load lookup tables", err);
+      }
+    };
+    loadLookups();
+  }, []);
+
+  // Load towns when county changes
+  useEffect(() => {
+    const loadTowns = async () => {
+      if (!selectedCountyId) {
+        setTowns([]);
+        setSelectedTownId("");
+        return;
+      }
+      const { data, error } = await (supabase as any)
+        .from("towns")
+        .select("id, name, county_id")
+        .eq("county_id", Number(selectedCountyId))
+        .order("name");
+      if (error) {
+        console.error("Failed to load towns", error);
+        setTowns([]);
+        return;
+      }
+      setTowns((data as any) || []);
+    };
+    loadTowns();
+  }, [selectedCountyId]);
+
+  // Keep formData.location in sync with selected county/town
+  useEffect(() => {
+    const countyName = counties.find(c => String(c.id) === selectedCountyId)?.name || "";
+    const townName = towns.find(t => String(t.id) === selectedTownId)?.name || "";
+    const loc = townName && countyName ? `${townName}, ${countyName}` : countyName || townName || "";
+    setFormData(prev => ({ ...prev, location: loc }));
+  }, [selectedCountyId, selectedTownId, counties, towns]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,22 +271,68 @@ const CompanyProfileForm = () => {
 
           <div>
             <Label htmlFor="industry">Industry</Label>
-            <Input
-              id="industry"
+            <Select
               value={formData.industry}
-              onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-              placeholder="e.g., Technology, Healthcare, Finance"
-            />
+              onValueChange={(value) => setFormData({ ...formData, industry: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select industry" />
+              </SelectTrigger>
+              <SelectContent>
+                {industries.map((ind) => (
+                  <SelectItem key={ind.id} value={ind.name}>
+                    {ind.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div>
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              placeholder="e.g., San Francisco, CA"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="county">County</Label>
+              <Select
+                value={selectedCountyId}
+                onValueChange={(value) => {
+                  setSelectedCountyId(value);
+                  setSelectedTownId("");
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select county" />
+                </SelectTrigger>
+                <SelectContent>
+                  {counties.map((c) => (
+                    <SelectItem key={c.id} value={String(c.id)}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="town">Town</Label>
+              <Select
+                value={selectedTownId}
+                onValueChange={(value) => setSelectedTownId(value)}
+                disabled={!selectedCountyId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={selectedCountyId ? "Select town" : "Select county first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {towns.map((t) => (
+                    <SelectItem key={t.id} value={String(t.id)}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="location">Location (auto-filled)</Label>
+              <Input id="location" value={formData.location} readOnly placeholder="Select county and town" />
+            </div>
           </div>
 
           <div>
