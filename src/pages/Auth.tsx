@@ -23,7 +23,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"employer" | "candidate">("candidate");
+  const [role, setRole] = useState<"employer" | "candidate" | "admin">("candidate");
 
   useEffect(() => {
     if (user) {
@@ -192,13 +192,14 @@ const Auth = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="role">I am a</Label>
-                    <Select value={role} onValueChange={(value: "employer" | "candidate") => setRole(value)}>
+                    <Select value={role} onValueChange={(value: "employer" | "candidate" | "admin") => setRole(value)}>
                       <SelectTrigger id="role">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="candidate">Job Seeker</SelectItem>
                         <SelectItem value="employer">Employer</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
