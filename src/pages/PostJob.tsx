@@ -484,6 +484,260 @@ const PostJob = () => {
                   </div>
                 </TabsContent>
 
+                <TabsContent value="requirements" className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="required_qualifications">Required Qualifications</Label>
+                    <Textarea
+                      id="required_qualifications"
+                      name="required_qualifications"
+                      value={formData.required_qualifications}
+                      onChange={handleChange}
+                      placeholder="Enter required qualifications (comma-separated), e.g., Bachelor's in Computer Science, 3+ years experience"
+                      className="min-h-[100px]"
+                    />
+                    <p className="text-xs text-muted-foreground">Separate multiple qualifications with commas</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="preferred_qualifications">Preferred Qualifications</Label>
+                    <Textarea
+                      id="preferred_qualifications"
+                      name="preferred_qualifications"
+                      value={formData.preferred_qualifications}
+                      onChange={handleChange}
+                      placeholder="Enter preferred qualifications (comma-separated), e.g., Master's degree, Leadership experience"
+                      className="min-h-[100px]"
+                    />
+                    <p className="text-xs text-muted-foreground">Separate multiple qualifications with commas</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="education_requirements">Education Requirements</Label>
+                      <Input
+                        id="education_requirements"
+                        name="education_requirements"
+                        value={formData.education_requirements}
+                        onChange={handleChange}
+                        placeholder="e.g., Bachelor's in Civil Engineering"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="license_requirements">License Requirements</Label>
+                      <Input
+                        id="license_requirements"
+                        name="license_requirements"
+                        value={formData.license_requirements}
+                        onChange={handleChange}
+                        placeholder="e.g., Registered Nurse License"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="software_skills">Software Skills</Label>
+                      <Textarea
+                        id="software_skills"
+                        name="software_skills"
+                        value={formData.software_skills}
+                        onChange={handleChange}
+                        placeholder="Enter software skills (comma-separated), e.g., AutoCAD, MATLAB, Python"
+                        className="min-h-[80px]"
+                      />
+                      <p className="text-xs text-muted-foreground">Separate multiple skills with commas</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="language_requirements">Language Requirements</Label>
+                      <Input
+                        id="language_requirements"
+                        name="language_requirements"
+                        value={formData.language_requirements}
+                        onChange={handleChange}
+                        placeholder="e.g., English, Kiswahili"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="practice_area">Practice Area (Health)</Label>
+                      <Input
+                        id="practice_area"
+                        name="practice_area"
+                        value={formData.practice_area}
+                        onChange={handleChange}
+                        placeholder="e.g., Pediatrics, Surgery"
+                      />
+                      <p className="text-xs text-muted-foreground">For health jobs only</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="project_type">Project Type (Architecture)</Label>
+                      <Input
+                        id="project_type"
+                        name="project_type"
+                        value={formData.project_type}
+                        onChange={handleChange}
+                        placeholder="e.g., Residential, Commercial"
+                      />
+                      <p className="text-xs text-muted-foreground">For architecture jobs only</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="visa_sponsorship">Visa Sponsorship</Label>
+                    <Select value={formData.visa_sponsorship} onValueChange={(value) => setFormData({...formData, visa_sponsorship: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">Yes</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                        <SelectItem value="Not Applicable">Not Applicable</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                    <p className="text-sm font-medium">Compensation Details</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_min">Minimum Salary</Label>
+                        <Input
+                          id="salary_min"
+                          name="salary_min"
+                          type="number"
+                          value={formData.salary_min}
+                          onChange={handleChange}
+                          placeholder="50000"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_max">Maximum Salary</Label>
+                        <Input
+                          id="salary_max"
+                          name="salary_max"
+                          type="number"
+                          value={formData.salary_max}
+                          onChange={handleChange}
+                          placeholder="80000"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_period">Period</Label>
+                        <Select value={formData.salary_period} onValueChange={(value) => setFormData({...formData, salary_period: value})}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="HOUR">Per Hour</SelectItem>
+                            <SelectItem value="DAY">Per Day</SelectItem>
+                            <SelectItem value="WEEK">Per Week</SelectItem>
+                            <SelectItem value="MONTH">Per Month</SelectItem>
+                            <SelectItem value="YEAR">Per Year</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="work_schedule">Work Schedule</Label>
+                      <Input
+                        id="work_schedule"
+                        name="work_schedule"
+                        value={formData.work_schedule}
+                        onChange={handleChange}
+                        placeholder="e.g., Monday–Friday 8:00–17:00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                    <p className="text-sm font-medium">Location Details</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="county">County</Label>
+                        <Select value={selectedCountyId} onValueChange={setSelectedCountyId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select county" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {counties?.map(county => (
+                              <SelectItem key={county.id} value={String(county.id)}>{county.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="city">City/Town</Label>
+                        <Select 
+                          value={selectedTownId} 
+                          onValueChange={setSelectedTownId}
+                          disabled={!selectedCountyId}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={selectedCountyId ? "Select town" : "Select county first"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {towns?.map(town => (
+                              <SelectItem key={town.id} value={String(town.id)}>{town.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="job_location_address">Full Address</Label>
+                      <Input
+                        id="job_location_address"
+                        name="job_location_address"
+                        value={formData.job_location_address}
+                        onChange={handleChange}
+                        placeholder="e.g., 123 Main Street, Building A"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                    <p className="text-sm font-medium">Additional Information</p>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="job_function">Job Function</Label>
+                      <Select value={formData.job_function} onValueChange={(value) => setFormData({...formData, job_function: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select job function" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {jobFunctions?.map(func => (
+                            <SelectItem key={func.id} value={func.name}>{func.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="tags">Tags (Keywords)</Label>
+                      <Input
+                        id="tags"
+                        name="tags"
+                        value={formData.tags}
+                        onChange={handleChange}
+                        placeholder="e.g., engineering, remote, senior (comma-separated)"
+                      />
+                      <p className="text-xs text-muted-foreground">Separate multiple tags with commas</p>
+                    </div>
+                  </div>
+                </TabsContent>
+
                 <TabsContent value="application" className="space-y-4 mt-4">
                   <div className="flex items-center space-x-2">
                     <Checkbox 
