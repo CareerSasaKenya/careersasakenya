@@ -45,7 +45,7 @@ const Jobs = () => {
             <p className="text-muted-foreground">Loading opportunities...</p>
           </div>
         ) : jobs && jobs.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 animate-slide-up">
+          <div className="grid grid-cols-1 gap-6 md:gap-8 animate-slide-up">
             {jobs.map((job, index) => (
               <div key={job.id} style={{ animationDelay: `${index * 50}ms` }} className="animate-fade-in">
                 <JobCard
@@ -57,6 +57,27 @@ const Jobs = () => {
                   salary={job.salary || undefined}
                   companyId={job.company_id}
                   companyLogo={job.companies?.logo}
+                  industry={job.industry}
+                  locationType={job.job_location_type}
+                  employmentType={job.employment_type}
+                  salaryMin={job.salary_min}
+                  salaryMax={job.salary_max}
+                  salaryCurrency={job.salary_currency}
+                  salaryPeriod={job.salary_period}
+                  experienceLevel={job.experience_level}
+                  datePosted={job.date_posted}
+                  validThrough={job.valid_through}
+                  applicationUrl={job.application_url}
+                  applyEmail={job.apply_email}
+                  applyLink={job.apply_link}
+                  skillsTop3={
+                    Array.isArray(job.software_skills)
+                      ? (job.software_skills as unknown[])
+                          .filter((s): s is string => typeof s === "string")
+                          .slice(0, 3)
+                      : undefined
+                  }
+                  department={job.job_function}
                 />
               </div>
             ))}
@@ -67,9 +88,7 @@ const Jobs = () => {
               <Loader2 className="h-16 w-16 text-muted-foreground" />
             </div>
             <p className="text-2xl font-semibold mb-2">No jobs available yet</p>
-            <p className="text-muted-foreground text-lg">
-              Check back soon for new opportunities!
-            </p>
+            <p className="text-muted-foreground text-lg">Check back soon for new opportunities!</p>
           </div>
         )}
       </div>

@@ -6,7 +6,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MapPin, Building2, DollarSign, Mail, ExternalLink, Loader2, Bookmark, CheckCircle, FileText, Clock, Briefcase, GraduationCap, Award, Code, Globe } from "lucide-react";
+import { ArrowLeft, MapPin, Building2, DollarSign, Mail, ExternalLink, Loader2, Bookmark, CheckCircle, FileText, Clock, Briefcase, GraduationCap, Award, Code, Globe, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
@@ -118,6 +118,24 @@ const JobDetails = () => {
       window.open(job.apply_link, "_blank");
     } else if (job?.application_url) {
       window.open(job.application_url, "_blank");
+    }
+  };
+
+  const adminEmail: string | undefined =
+    typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_ADMIN_EMAIL
+      ? String((import.meta as any).env.VITE_ADMIN_EMAIL)
+      : undefined;
+
+  const handleReportJob = () => {
+    if (!job) return;
+    const to = adminEmail || "";
+    const subject = encodeURIComponent(`Report Job: ${job.title} (${job.id})`);
+    const companyName = job.companies?.name || job.company || "";
+    const body = encodeURIComponent(
+      `Hello Admin,%0D%0A%0D%0AI would like to report a suspicious job posting on CareerSasa.%0D%0A%0D%0AJob Title: ${job.title}%0D%0ACompany: ${companyName}%0D%0AJob ID: ${job.id}%0D%0AURL: ${window.location.origin}/jobs/${job.id}%0D%0A%0D%0AReason/Details:%0D%0A- [Please describe what happened, e.g., request for payment, training fee, etc.]%0D%0A%0D%0AThank you.`
+    );
+    if (to) {
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
     }
   };
 
@@ -327,6 +345,24 @@ const JobDetails = () => {
                       )}
                     </Button>
                   )}
+                </div>
+
+                {/* Safety Alert + Report Job */}
+                <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 p-4">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+                    <div className="text-sm text-amber-900 leading-relaxed">
+                      <strong>CareerSasa Safety Alert:</strong> We strongly advise job seekers not to make any payment to employers or agencies during the recruitment process. If you're asked to pay for training, interviews, or job placement, report the job immediately using the "Report Job" button. CareerSasa thoroughly vets postings, but we encourage all applicants to stay vigilant and verify opportunities independently.
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <Button variant="outline" size="sm" onClick={handleReportJob} disabled={!adminEmail}>
+                      Report Job
+                    </Button>
+                    {!adminEmail && (
+                      <p className="mt-2 text-xs text-muted-foreground">Admin email is not configured. Set VITE_ADMIN_EMAIL in your environment to enable reporting.</p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

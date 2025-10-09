@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Building2, DollarSign, FileText } from "lucide-react";
+import { MapPin, Building2, DollarSign, FileText, Clock, ExternalLink, Mail, Briefcase } from "lucide-react";
 
 interface JobCardProps {
   id: string;
@@ -10,17 +10,137 @@ interface JobCardProps {
   company: string;
   location: string;
   description: string;
+  // Legacy combined salary text (optional)
   salary?: string;
   companyId?: string | null;
   companyLogo?: string | null;
+  // New optional fields for richer display
+  industry?: string | null;
+  locationType?: string | null; // e.g., REMOTE, HYBRID, ONSITE
+  employmentType?: string | null; // e.g., FULL_TIME
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryCurrency?: string | null; // e.g., KES
+  salaryPeriod?: string | null; // e.g., MONTH
+  experienceLevel?: string | null; // e.g., MID, SENIOR
+  datePosted?: string | null; // ISO string
+  validThrough?: string | null; // ISO string (deadline)
+  applicationUrl?: string | null;
+  applyEmail?: string | null;
+  applyLink?: string | null;
+  skillsTop3?: string[] | null; // optional: top 3 skills
+  department?: string | null;
 }
 
-const JobCard = ({ id, title, company, location, description, salary, companyId, companyLogo }: JobCardProps) => {
+const formatCurrency = (amount?: number | null, currency?: string | null) => {
+  if (amount == null || currency == null || currency === "") return null;
+  try {
+    return `${currency} ${amount.toLocaleString()}`;
+  } catch {
+    return `${currency} ${amount}`;
+  }
+};
+
+const toTitleCase = (text?: string | null) => {
+  if (!text) return null;
+  return text
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+};
+
+const relativeTimeFromNow = (iso?: string | null) => {
+  if (!iso) return null;
+  const date = new Date(iso);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const sec = Math.floor(diffMs / 1000);
+  const min = Math.floor(sec / 60);
+  const hr = Math.floor(min / 60);
+  const day = Math.floor(hr / 24);
+  if (day > 30) return `Posted ${Math.floor(day / 30)} mo ago`;
+  if (day >= 1) return `Posted ${day} day${day > 1 ? "s" : ""} ago`;
+  if (hr >= 1) return `Posted ${hr} hour${hr > 1 ? "s" : ""} ago`;
+  if (min >= 1) return `Posted ${min} min ago`;
+  return "Posted Today";
+};
+
+const JobCard = ({
+  id,
+  title,
+  company,
+  location,
+  description,
+  salary,
+  companyId,
+  companyLogo,
+  industry,
+  locationType,
+  employmentType,
+  salaryMin,
+  salaryMax,
+  salaryCurrency,
+  salaryPeriod,
+  experienceLevel,
+  datePosted,
+  validThrough,
+  applicationUrl,
+  applyEmail,
+  applyLink,
+  skillsTop3,
+  department,
+}: JobCardProps) => {
+  const displayLocation = locationType
+    ? `${location || ""}${location && locationType ? " • " : ""}${toTitleCase(locationType)}`
+    : location;
+
+  const salaryMinFmt = formatCurrency(salaryMin, salaryCurrency);
+  const salaryMaxFmt = formatCurrency(salaryMax, salaryCurrency);
+  const salaryPeriodFmt = salaryPeriod ? salaryPeriod.toLowerCase() : null;
+
+  let salaryDisplay: string | null = null;
+  if (salaryMinFmt && salaryMaxFmt) {
+    salaryDisplay = `${salaryMinFmt} – ${salaryMaxFmt}${salaryPeriodFmt ? ` / ${salaryPeriodFmt}` : ""}`;
+  } else if (salaryMinFmt || salaryMaxFmt) {
+    salaryDisplay = `${salaryMinFmt || salaryMaxFmt}${salaryPeriodFmt ? ` / ${salaryPeriodFmt}` : ""}`;
+  } else if (salary) {
+    salaryDisplay = salary; // legacy string
+  } else {
+    salaryDisplay = "Negotiable";
+  }
+
+  const experienceDisplay = experienceLevel
+    ? toTitleCase(experienceLevel)?.replace("Mid", "Mid-level")?.replace("Entry", "Entry-level")
+    : null;
+
+  const postedRel = relativeTimeFromNow(datePosted || undefined);
+  const deadline = validThrough ? new Date(validThrough) : null;
+  const isExpired = deadline ? deadline.getTime() < Date.now() : false;
+  const deadlineDisplay = deadline ? `Apply by ${deadline.toLocaleDateString()}` : null;
+
+  const hasExternalApply = !!(applyEmail || applyLink || applicationUrl);
+  const handleApplyClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (applyEmail) {
+      window.location.href = `mailto:${applyEmail}`;
+    } else if (applyLink) {
+      window.open(applyLink, "_blank");
+    } else if (applicationUrl) {
+      window.open(applicationUrl, "_blank");
+    }
+  };
+
+
   return (
     <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/50 hover:scale-[1.02] overflow-hidden">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-xl text-card-foreground group-hover:text-primary transition-colors">{title}</CardTitle>
-        <div className="flex flex-col gap-2.5 text-sm text-muted-foreground mt-3">
+      <CardHeader className="pb-3">
+        {/* Title (prominent) */}
+        <CardTitle className="text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-1" title={title}>
+          {title}
+        </CardTitle>
+
+        {/* Company row */}
+        <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
           {companyId ? (
             <Link to={`/companies/${companyId}`} className="flex items-center gap-2 hover:text-primary transition-colors group/company">
               {companyLogo && (
@@ -34,34 +154,99 @@ const JobCard = ({ id, title, company, location, description, salary, companyId,
           ) : (
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-muted-foreground" />
-              <span>Direct Listing</span>
-              <Badge variant="secondary" className="ml-2 text-xs">Admin</Badge>
+              <span className="font-medium">{company || "Direct Listing"}</span>
+              {!company && <Badge variant="secondary" className="ml-1 text-xs">Admin</Badge>}
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-accent" />
-            <span>{location}</span>
-          </div>
-          {salary && (
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-success" />
-              <span className="font-semibold text-foreground">{salary}</span>
-            </div>
+          {industry && (
+            <>
+              <span className="text-muted-foreground/50">•</span>
+              <span className="truncate" title={industry}>{industry}</span>
+            </>
+          )}
+        </div>
+
+        {/* Tag row: location, type, employment, experience */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          {displayLocation && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5" />
+              {displayLocation}
+            </Badge>
+          )}
+          {employmentType && (
+            <Badge variant="secondary">{toTitleCase(employmentType)}</Badge>
+          )}
+          {experienceDisplay && (
+            <Badge variant="outline">{experienceDisplay}</Badge>
+          )}
+          {department && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Briefcase className="h-3.5 w-3.5" />
+              {department}
+            </Badge>
+          )}
+        </div>
+
+        {/* Salary */}
+        <div className="flex items-center gap-2 mt-3">
+          <DollarSign className="h-4 w-4 text-success" />
+          <span className="font-semibold text-foreground">{salaryDisplay}</span>
+        </div>
+
+        {/* Dates */}
+        <div className="mt-2 text-xs text-muted-foreground flex items-center gap-3">
+          {postedRel && (
+            <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{postedRel}</span>
+          )}
+          {deadlineDisplay && (
+            <span className={`flex items-center gap-1 ${isExpired ? 'text-destructive' : ''}`}>
+              <Clock className="h-3.5 w-3.5" />
+              {isExpired ? 'Job Closed' : deadlineDisplay}
+            </span>
           )}
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <p className="text-muted-foreground line-clamp-3 mb-5 leading-relaxed">
+        {/* Short description (2-3 sentences) */}
+        <p className="text-muted-foreground line-clamp-3 mb-4 leading-relaxed">
           {description}
         </p>
-        <Link to={`/jobs/${id}`}>
-          <Button variant="gradient" className="w-full">
-            View Details
-          </Button>
-        </Link>
+
+        {/* Secondary chips: top 3 skills (optional) */}
+        {skillsTop3 && skillsTop3.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {skillsTop3.slice(0, 3).map((skill, idx) => (
+              <Badge key={idx} variant="secondary">{skill}</Badge>
+            ))}
+          </div>
+        )}
+
+        {/* CTA */}
+        <div className="flex gap-2">
+          {hasExternalApply ? (
+            <Button onClick={handleApplyClick} variant="default" className="bg-gradient-primary hover:opacity-90 transition-opacity flex-1">
+              {applyEmail ? (
+                <>
+                  <Mail className="mr-2 h-4 w-4" /> Apply Now
+                </>
+              ) : (
+                <>
+                  <ExternalLink className="mr-2 h-4 w-4" /> Apply Now
+                </>
+              )}
+            </Button>
+          ) : null}
+          <Link to={`/jobs/${id}`} className="flex-1">
+            <Button variant={hasExternalApply ? "outline" : "gradient"} className="w-full">
+              View Details
+            </Button>
+          </Link>
+        </div>
+
       </CardContent>
     </Card>
   );
-};
+}
 
 export default JobCard;
