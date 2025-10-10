@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Facebook, Linkedin, Mail, Twitter, MessageSquare } from "lucide-react";
+import { Facebook, Linkedin, Mail, Twitter, MessageSquare, Flag } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ReportJobDialog } from "@/components/ReportJobDialog";
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -133,23 +134,53 @@ const JobDetails = () => {
       return;
     }
   };
-
   const adminEmail: string | undefined =
     typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_ADMIN_EMAIL
       ? String((import.meta as any).env.VITE_ADMIN_EMAIL)
       : undefined;
 
-  const handleReportJob = () => {
-    if (!job) return;
-    const to = adminEmail || "";
-    const subject = encodeURIComponent(`Report Job: ${job.title} (${job.id})`);
-    const companyName = job.companies?.name || job.company || "";
-    const body = encodeURIComponent(
-      `Hello Admin,%0D%0A%0D%0AI would like to report a suspicious job posting on CareerSasa.%0D%0A%0D%0AJob Title: ${job.title}%0D%0ACompany: ${companyName}%0D%0AJob ID: ${job.id}%0D%0AURL: ${window.location.origin}/jobs/${job.id}%0D%0A%0D%0AReason/Details:%0D%0A- [Please describe what happened, e.g., request for payment, training fee, etc.]%0D%0A%0D%0AThank you.`
-    );
-    if (to) {
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+
+  const reportJobMutation = useMutation({
+    mutationFn: async (reportData: { jobId: string; message: string }) => {
+      const { data, error } = await supabase
+        .from('job_reports')
+        .insert([
+          {
+            job_id: reportData.jobId,
+            reported_by: user?.id || null,
+            message: reportData.message,
+            status: 'pending',
+            job_data: job // Store the job data at the time of reporting
+          }
+        ])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Thank you for reporting this job. Our team will review it shortly.');
+      setIsReportDialogOpen(false);
+    },
+    onError: (error) => {
+      console.error('Error reporting job:', error);
+      toast.error('Failed to submit report. Please try again.');
     }
+  });
+
+  const handleReportJob = async () => {
+    if (!job?.id) return;
+    setIsReportDialogOpen(true);
+  };
+
+  const handleReportJobSubmit = async (message: string) => {
+    if (!job?.id) return;
+    await reportJobMutation.mutateAsync({
+      jobId: job.id,
+      message: message || 'No additional details provided.'
+    });
   };
 
   if (isLoading) {
@@ -379,9 +410,22 @@ const JobDetails = () => {
                         <Mail className="h-4 w-4" />
                       </a>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleReportJob} disabled={!adminEmail}>
-                      Report Job
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setIsReportDialogOpen(true)}
+                      disabled={reportJobMutation.isPending}
+                      className="flex items-center gap-2"
+                    >
+                      <Flag className="h-4 w-4" />
+                      {reportJobMutation.isPending ? 'Submitting...' : 'Flag'}
                     </Button>
+                    <ReportJobDialog
+                      open={isReportDialogOpen}
+                      onOpenChange={setIsReportDialogOpen}
+                      onReport={handleReportJob}
+                      jobTitle={job?.title || 'this job'}
+                    />
                   </div>
                   {!adminEmail && (
                     <p className="mt-2 text-xs text-muted-foreground">Admin email is not configured. Set VITE_ADMIN_EMAIL in your environment to enable reporting.</p>
