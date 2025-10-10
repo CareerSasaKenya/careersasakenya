@@ -119,20 +119,11 @@ const JobCard = ({
   const deadlineDisplay = deadline ? `Apply by ${deadline.toLocaleDateString()}` : null;
 
   const hasExternalApply = !!(applyEmail || applyLink || applicationUrl);
-  const handleApplyClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (applyEmail) {
-      window.location.href = `mailto:${applyEmail}`;
-    } else if (applyLink) {
-      window.open(applyLink, "_blank");
-    } else if (applicationUrl) {
-      window.open(applicationUrl, "_blank");
-    }
-  };
 
 
   return (
-    <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/50 hover:scale-[1.02] overflow-hidden">
+    <Link to={`/jobs/${id}`} className="block">
+      <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/50 hover:scale-[1.02] overflow-hidden h-full">
       <CardHeader className="pb-3">
         {/* Title (prominent) */}
         <CardTitle className="text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-1" title={title}>
@@ -222,30 +213,15 @@ const JobCard = ({
           </div>
         )}
 
-        {/* CTA */}
-        <div className="flex gap-2">
-          {hasExternalApply ? (
-            <Button onClick={handleApplyClick} variant="default" className="bg-gradient-primary hover:opacity-90 transition-opacity flex-1">
-              {applyEmail ? (
-                <>
-                  <Mail className="mr-2 h-4 w-4" /> Apply Now
-                </>
-              ) : (
-                <>
-                  <ExternalLink className="mr-2 h-4 w-4" /> Apply Now
-                </>
-              )}
-            </Button>
-          ) : null}
-          <Link to={`/jobs/${id}`} className="flex-1">
-            <Button variant={hasExternalApply ? "outline" : "gradient"} className="w-full">
-              View Details
-            </Button>
-          </Link>
+        {/* View Details Button */}
+        <div className="mt-4">
+          <Button variant="outline" className="w-full">
+            View Details
+          </Button>
         </div>
-
       </CardContent>
     </Card>
+    </Link>
   );
 }
 

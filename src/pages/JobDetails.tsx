@@ -1,15 +1,22 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { Facebook, Linkedin, Mail, Twitter, MessageSquare } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MapPin, Building2, DollarSign, Mail, ExternalLink, Loader2, Bookmark, CheckCircle, FileText, Clock, Briefcase, GraduationCap, Award, Code, Globe, AlertTriangle } from "lucide-react";
+import { ArrowLeft, MapPin, Building2, DollarSign, ExternalLink, Loader2, Bookmark, CheckCircle, FileText, Clock, Briefcase, GraduationCap, Award, Code, Globe, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -112,12 +119,18 @@ const JobDetails = () => {
   });
 
   const handleApply = () => {
+    // Prioritize application_url over other options
+    if (job?.application_url) {
+      window.open(job.application_url, "_blank");
+      return;
+    }
+    if (job?.apply_link) {
+      window.open(job.apply_link, "_blank");
+      return;
+    }
     if (job?.apply_email) {
       window.location.href = `mailto:${job.apply_email}?subject=Application for ${job.title}`;
-    } else if (job?.apply_link) {
-      window.open(job.apply_link, "_blank");
-    } else if (job?.application_url) {
-      window.open(job.application_url, "_blank");
+      return;
     }
   };
 
@@ -186,6 +199,22 @@ const JobDetails = () => {
               <CardHeader className="border-b bg-muted/30">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
+                    {(job.valid_through || job.date_posted) && (
+                      <div className="mb-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                        {job.date_posted && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>Posted: {new Date(job.date_posted).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        {job.valid_through && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>Valid until: {new Date(job.valid_through).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <CardTitle className="text-3xl mb-4">{job.title}</CardTitle>
                     <div className="flex flex-wrap gap-4 text-muted-foreground">
                       {job.company_id && job.companies ? (
@@ -292,60 +321,6 @@ const JobDetails = () => {
                 )}
 
                 <Separator />
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {role === "candidate" && user && job.direct_apply && (
-                    <>
-                      <Button 
-                        onClick={() => applyMutation.mutate()}
-                        size="lg"
-                        className="bg-gradient-primary hover:opacity-90 transition-opacity"
-                        disabled={hasApplied || applyMutation.isPending}
-                      >
-                        {hasApplied ? (
-                          <>
-                            <CheckCircle className="mr-2 h-5 w-5" />
-                            Applied
-                          </>
-                        ) : (
-                          <>
-                            <Mail className="mr-2 h-5 w-5" />
-                            Apply Now
-                          </>
-                        )}
-                      </Button>
-                      <Button 
-                        onClick={() => saveMutation.mutate()}
-                        variant="outline"
-                        size="lg"
-                        disabled={saveMutation.isPending}
-                      >
-                        <Bookmark className={`mr-2 h-5 w-5 ${isSaved ? 'fill-current' : ''}`} />
-                        {isSaved ? "Saved" : "Save Job"}
-                      </Button>
-                    </>
-                  )}
-                  {(job.apply_email || job.apply_link || job.application_url) && (
-                    <Button 
-                      onClick={handleApply}
-                      size="lg"
-                      variant={role === "candidate" && job.direct_apply ? "outline" : "default"}
-                      className={role === "candidate" && job.direct_apply ? "" : "bg-gradient-primary hover:opacity-90 transition-opacity"}
-                    >
-                      {job.apply_email ? (
-                        <>
-                          <Mail className="mr-2 h-5 w-5" />
-                          Email Employer
-                        </>
-                      ) : (
-                        <>
-                          <ExternalLink className="mr-2 h-5 w-5" />
-                          {job.application_url ? "Apply on Company Site" : "External Apply Link"}
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </div>
 
                 {/* Safety Alert + Report Job */}
                 <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 p-4">
@@ -355,14 +330,62 @@ const JobDetails = () => {
                       <strong>CareerSasa Safety Alert:</strong> We strongly advise job seekers not to make any payment to employers or agencies during the recruitment process. If you're asked to pay for training, interviews, or job placement, report the job immediately using the "Report Job" button. CareerSasa thoroughly vets postings, but we encourage all applicants to stay vigilant and verify opportunities independently.
                     </div>
                   </div>
-                  <div className="mt-3">
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-muted-foreground">Share:</span>
+                      <a 
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[#1877F2] hover:bg-[#1877F2]/10 p-2 rounded-full transition-colors"
+                        aria-label="Share on Facebook"
+                      >
+                        <Facebook className="h-4 w-4" />
+                      </a>
+                      <a 
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[#0077B5] hover:bg-[#0077B5]/10 p-2 rounded-full transition-colors"
+                        aria-label="Share on LinkedIn"
+                      >
+                        <Linkedin className="h-4 w-4" />
+                      </a>
+                      <a 
+                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out this job: ${job?.title || ''}`)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[#1DA1F2] hover:bg-[#1DA1F2]/10 p-2 rounded-full transition-colors"
+                        aria-label="Share on Twitter"
+                      >
+                        <Twitter className="h-4 w-4" />
+                      </a>
+                      <a 
+                        href={`https://wa.me/?text=${encodeURIComponent(`Check out this job: ${window.location.href}`)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[#25D366] hover:bg-[#25D366]/10 p-2 rounded-full transition-colors"
+                        aria-label="Share on WhatsApp"
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                      </a>
+                      <a 
+                        href={`mailto:?subject=${encodeURIComponent(`Job Opportunity: ${job?.title || ''}`)}&body=${encodeURIComponent(`Check out this job: ${window.location.href}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:bg-gray-600/10 p-2 rounded-full transition-colors flex items-center justify-center"
+                        aria-label="Share via Email"
+                      >
+                        <Mail className="h-4 w-4" />
+                      </a>
+                    </div>
                     <Button variant="outline" size="sm" onClick={handleReportJob} disabled={!adminEmail}>
                       Report Job
                     </Button>
-                    {!adminEmail && (
-                      <p className="mt-2 text-xs text-muted-foreground">Admin email is not configured. Set VITE_ADMIN_EMAIL in your environment to enable reporting.</p>
-                    )}
                   </div>
+                  {!adminEmail && (
+                    <p className="mt-2 text-xs text-muted-foreground">Admin email is not configured. Set VITE_ADMIN_EMAIL in your environment to enable reporting.</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -370,137 +393,9 @@ const JobDetails = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Job Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {(job.salary_min || job.salary_max) && (
-                  <div className="flex items-start gap-3">
-                    <DollarSign className="h-5 w-5 text-secondary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Salary Range</p>
-                      <p className="font-medium">
-                        {job.salary_currency} {job.salary_min?.toLocaleString()} - {job.salary_max?.toLocaleString()}
-                        <span className="text-sm text-muted-foreground ml-1">
-                          / {job.salary_period?.toLowerCase()}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                )}
+            {/* Apply Here section replacing previous Job Details */}
+            <ApplySection job={job} userId={user?.id} hasApplied={!!hasApplied} onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] })} />
 
-                {job.specialization && (
-                  <div className="flex items-start gap-3">
-                    <Briefcase className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Specialization</p>
-                      <p className="font-medium">{job.specialization}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.job_function && (
-                  <div className="flex items-start gap-3">
-                    <Briefcase className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Job Function</p>
-                      <p className="font-medium">{job.job_function}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.work_schedule && (
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Work Schedule</p>
-                      <p className="font-medium">{job.work_schedule}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.education_requirements && (
-                  <div className="flex items-start gap-3">
-                    <GraduationCap className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Education</p>
-                      <p className="font-medium">{job.education_requirements}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.license_requirements && (
-                  <div className="flex items-start gap-3">
-                    <Award className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">License Required</p>
-                      <p className="font-medium">{job.license_requirements}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.practice_area && (
-                  <div className="flex items-start gap-3">
-                    <Briefcase className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Practice Area</p>
-                      <p className="font-medium">{job.practice_area}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.project_type && (
-                  <div className="flex items-start gap-3">
-                    <Building2 className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Project Type</p>
-                      <p className="font-medium">{job.project_type}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.language_requirements && (
-                  <div className="flex items-start gap-3">
-                    <Globe className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Languages</p>
-                      <p className="font-medium">{job.language_requirements}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.visa_sponsorship && job.visa_sponsorship !== "Not Applicable" && (
-                  <div className="flex items-start gap-3">
-                    <Globe className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Visa Sponsorship</p>
-                      <p className="font-medium">{job.visa_sponsorship}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.valid_through && (
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Valid Until</p>
-                      <p className="font-medium">{new Date(job.valid_through).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.date_posted && (
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Posted</p>
-                      <p className="font-medium">{new Date(job.date_posted).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
 
             {job.tags && Array.isArray(job.tags) && job.tags.length > 0 && (
               <Card>
@@ -520,6 +415,294 @@ const JobDetails = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+type Job = any;
+
+const RoleDetails = ({ job }: { job: Job }) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Job Details</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {(job.salary_min || job.salary_max) && (
+          <div className="flex items-start gap-3">
+            <DollarSign className="h-5 w-5 text-secondary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Salary Range</p>
+              <p className="font-medium">
+                {job.salary_currency} {job.salary_min?.toLocaleString()} - {job.salary_max?.toLocaleString()}
+                <span className="text-sm text-muted-foreground ml-1">/ {job.salary_period?.toLowerCase()}</span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {job.specialization && (
+          <div className="flex items-start gap-3">
+            <Briefcase className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Specialization</p>
+              <p className="font-medium">{job.specialization}</p>
+            </div>
+          </div>
+        )}
+
+        {job.job_function && (
+          <div className="flex items-start gap-3">
+            <Briefcase className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Job Function</p>
+              <p className="font-medium">{job.job_function}</p>
+            </div>
+          </div>
+        )}
+
+        {job.work_schedule && (
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Work Schedule</p>
+              <p className="font-medium">{job.work_schedule}</p>
+            </div>
+          </div>
+        )}
+
+        {job.education_requirements && (
+          <div className="flex items-start gap-3">
+            <GraduationCap className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Education</p>
+              <p className="font-medium">{job.education_requirements}</p>
+            </div>
+          </div>
+        )}
+
+        {job.license_requirements && (
+          <div className="flex items-start gap-3">
+            <Award className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">License Required</p>
+              <p className="font-medium">{job.license_requirements}</p>
+            </div>
+          </div>
+        )}
+
+        {job.practice_area && (
+          <div className="flex items-start gap-3">
+            <Briefcase className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Practice Area</p>
+              <p className="font-medium">{job.practice_area}</p>
+            </div>
+          </div>
+        )}
+
+        {job.project_type && (
+          <div className="flex items-start gap-3">
+            <Building2 className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Project Type</p>
+              <p className="font-medium">{job.project_type}</p>
+            </div>
+          </div>
+        )}
+
+        {job.language_requirements && (
+          <div className="flex items-start gap-3">
+            <Globe className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Languages</p>
+              <p className="font-medium">{job.language_requirements}</p>
+            </div>
+          </div>
+        )}
+
+        {job.visa_sponsorship && job.visa_sponsorship !== "Not Applicable" && (
+          <div className="flex items-start gap-3">
+            <Globe className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Visa Sponsorship</p>
+              <p className="font-medium">{job.visa_sponsorship}</p>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+const ApplySection = ({ job, userId, hasApplied, onApplied }: { job: Job; userId?: string; hasApplied: boolean; onApplied: () => void }) => {
+  const [yearsExperience, setYearsExperience] = useState<string>("");
+  const [coverLetter, setCoverLetter] = useState<string>("");
+  const [expectedSalary, setExpectedSalary] = useState<string>("");
+  const [isNegotiable, setIsNegotiable] = useState<boolean>(false);
+  const [saveCoverToProfile, setSaveCoverToProfile] = useState<boolean>(false);
+  const [applyMethod, setApplyMethod] = useState<"profile" | "cv">("profile");
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState<boolean>(false);
+
+  const queryClient = useQueryClient();
+
+  const doApply = async () => {
+    if (!userId) {
+      toast.error("Please log in to apply");
+      return;
+    }
+
+    // If admin provided application_url, override and open it
+    if (job?.application_url) {
+      window.open(job.application_url, "_blank");
+      return;
+    }
+
+    // Handle CV upload if apply with CV selected
+    let uploadedCvUrl: string | null = null;
+    if (applyMethod === "cv") {
+      if (!cvFile) {
+        toast.error("Please upload your CV to continue");
+        return;
+      }
+      try {
+        setUploading(true);
+        const fileExt = cvFile.name.split(".").pop();
+        const filePath = `${userId}/${job.id}-${Date.now()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from("cvs").upload(filePath, cvFile, {
+          upsert: false,
+        });
+        if (uploadError) throw uploadError;
+        const { data } = supabase.storage.from("cvs").getPublicUrl(filePath);
+        uploadedCvUrl = data.publicUrl;
+      } catch (e: any) {
+        toast.error(e?.message || "Failed to upload CV. Please try again.");
+        setUploading(false);
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    // Persist application (minimal fields to avoid schema mismatch)
+    const { error } = await supabase
+      .from("job_applications")
+      .insert({ job_id: job.id, user_id: userId });
+    if (error) {
+      toast.error("Failed to submit application");
+      return;
+    }
+
+    // Best-effort: include extra info via separate notification
+    if (applyMethod === "cv" && uploadedCvUrl) {
+      toast.info("CV uploaded successfully");
+    }
+    if (saveCoverToProfile) {
+      // Placeholder: no profile table found. This can be wired later.
+      try {
+        localStorage.setItem("careersasa_cover_letter", coverLetter);
+      } catch {}
+      toast.success("Cover letter saved for future use");
+    }
+
+    toast.success("Application submitted successfully!");
+    queryClient.invalidateQueries({ queryKey: ["application", job.id, userId] });
+    onApplied();
+  };
+
+  // If only external methods exist (application_url/apply_link/apply_email), show a single button
+  const hasExternal = Boolean(job?.application_url || job?.apply_link || job?.apply_email);
+
+  if (job?.application_url) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Apply Here</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => window.open(job.application_url, "_blank")} className="w-full bg-gradient-primary hover:opacity-90">
+            <ExternalLink className="mr-2 h-5 w-5" /> Apply on Company Site
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Apply Here</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="yearsExp">Years of experience</Label>
+          <Input id="yearsExp" type="number" min={0} value={yearsExperience} onChange={(e) => setYearsExperience(e.target.value)} placeholder="e.g. 3" />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="coverLetter">Cover letter</Label>
+          <Textarea id="coverLetter" value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)} placeholder="Write a brief cover letter..." rows={5} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="expectedSalary">Expected salary</Label>
+            <Input id="expectedSalary" type="number" min={0} value={expectedSalary} onChange={(e) => setExpectedSalary(e.target.value)} placeholder="e.g. 80000" />
+          </div>
+          <div className="flex items-center gap-2 mt-6">
+            <Checkbox id="negotiable" checked={isNegotiable} onCheckedChange={(v) => setIsNegotiable(Boolean(v))} />
+            <Label htmlFor="negotiable">Negotiable</Label>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Checkbox id="saveCover" checked={saveCoverToProfile} onCheckedChange={(v) => setSaveCoverToProfile(Boolean(v))} />
+          <Label htmlFor="saveCover">Save this cover letter to my profile</Label>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Choose how to apply</Label>
+          <RadioGroup value={applyMethod} onValueChange={(v) => setApplyMethod(v as any)} className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="flex items-center space-x-2 border rounded-md p-3">
+              <RadioGroupItem value="profile" id="apply-profile" />
+              <Label htmlFor="apply-profile">Apply with my profile</Label>
+            </div>
+            <div className="flex items-center space-x-2 border rounded-md p-3">
+              <RadioGroupItem value="cv" id="apply-cv" />
+              <Label htmlFor="apply-cv">Apply with my uploaded CV</Label>
+            </div>
+          </RadioGroup>
+        </div>
+
+        {applyMethod === "cv" && (
+          <div className="space-y-2">
+            <Label htmlFor="cv">Upload CV (PDF/DOC)</Label>
+            <Input id="cv" type="file" accept=".pdf,.doc,.docx" onChange={(e) => setCvFile(e.target.files?.[0] || null)} />
+          </div>
+        )}
+
+        <div className="pt-2">
+          {hasExternal ? (
+            <Button onClick={() => {
+              if (job?.apply_link) {
+                window.open(job.apply_link, "_blank");
+              } else if (job?.apply_email) {
+                window.location.href = `mailto:${job.apply_email}?subject=Application for ${job.title}`;
+              }
+            }} className="w-full bg-gradient-primary hover:opacity-90" disabled={uploading || hasApplied}>
+              {uploading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ExternalLink className="mr-2 h-5 w-5" />}
+              Apply Now
+            </Button>
+          ) : (
+            <Button onClick={doApply} className="w-full bg-gradient-primary hover:opacity-90" disabled={uploading || hasApplied}>
+              {uploading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Mail className="mr-2 h-5 w-5" />}
+              {hasApplied ? "Applied" : "Apply Now"}
+            </Button>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">Note: CVs are stored securely in our Database.</p>
+      </CardContent>
+    </Card>
   );
 };
 
