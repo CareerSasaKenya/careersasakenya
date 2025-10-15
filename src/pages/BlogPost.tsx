@@ -152,11 +152,8 @@ const BlogPost = () => {
           </div>
         </header>
 
-        <div className="prose prose-slate max-w-none mb-12">
-          {post.content.split('\n').map((paragraph, index) => (
-            paragraph.trim() && <p key={index} className="mb-4">{paragraph}</p>
-          ))}
-        </div>
+        <div className="prose prose-slate max-w-none mb-12" dangerouslySetInnerHTML={{ __html: post.content }} />
+
 
         {relatedPosts.length > 0 && (
           <section className="mt-12">

@@ -295,12 +295,10 @@ const JobDetails = () => {
                     <Briefcase className="h-5 w-5" />
                     Job Description
                   </h3>
-                  <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                    {job.description}
-                  </p>
+                  <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.description }} />
                 </div>
 
-                {job.required_qualifications && Array.isArray(job.required_qualifications) && job.required_qualifications.length > 0 && (
+                {job.required_qualifications && (
                   <>
                     <Separator />
                     <div>
@@ -308,16 +306,12 @@ const JobDetails = () => {
                         <Award className="h-5 w-5" />
                         Required Qualifications
                       </h3>
-                      <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                        {job.required_qualifications.map((qual: string, index: number) => (
-                          <li key={index}>{qual}</li>
-                        ))}
-                      </ul>
+                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.required_qualifications }} />
                     </div>
                   </>
                 )}
 
-                {job.preferred_qualifications && Array.isArray(job.preferred_qualifications) && job.preferred_qualifications.length > 0 && (
+                {job.preferred_qualifications && (
                   <>
                     <Separator />
                     <div>
@@ -325,16 +319,12 @@ const JobDetails = () => {
                         <GraduationCap className="h-5 w-5" />
                         Preferred Qualifications
                       </h3>
-                      <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                        {job.preferred_qualifications.map((qual: string, index: number) => (
-                          <li key={index}>{qual}</li>
-                        ))}
-                      </ul>
+                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.preferred_qualifications }} />
                     </div>
                   </>
                 )}
 
-                {job.software_skills && Array.isArray(job.software_skills) && job.software_skills.length > 0 && (
+                {job.software_skills && (
                   <>
                     <Separator />
                     <div>
@@ -342,11 +332,7 @@ const JobDetails = () => {
                         <Code className="h-5 w-5" />
                         Required Skills & Software
                       </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {job.software_skills.map((skill: string, index: number) => (
-                          <Badge key={index} variant="secondary">{skill}</Badge>
-                        ))}
-                      </div>
+                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.software_skills }} />
                     </div>
                   </>
                 )}
@@ -431,6 +417,12 @@ const JobDetails = () => {
                     <p className="mt-2 text-xs text-muted-foreground">Admin email is not configured. Set VITE_ADMIN_EMAIL in your environment to enable reporting.</p>
                   )}
                 </div>
+
+                {job.additional_info && (
+                  <div className="mt-6 rounded-md border border-border bg-muted/30 p-4">
+                    <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.additional_info }} />
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

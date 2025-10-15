@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Loader2, Info } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RichTextEditor from "@/components/RichTextEditor";
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -66,6 +67,7 @@ const PostJob = () => {
     tags: "",
     job_function: "",
     status: "active",
+    additional_info: "",
   });
 
   const [selectedCountyId, setSelectedCountyId] = useState<string>("");
@@ -213,12 +215,12 @@ const PostJob = () => {
         // STEM/Health/Architecture Fields
         industry: data.industry || null,
         specialization: data.specialization || null,
-        required_qualifications: data.required_qualifications ? data.required_qualifications.split(',').map((q: string) => q.trim()) : null,
-        preferred_qualifications: data.preferred_qualifications ? data.preferred_qualifications.split(',').map((q: string) => q.trim()) : null,
+        required_qualifications: data.required_qualifications || null,
+        preferred_qualifications: data.preferred_qualifications || null,
         education_requirements: data.education_requirements || null,
         license_requirements: data.license_requirements || null,
         practice_area: data.practice_area || null,
-        software_skills: data.software_skills ? data.software_skills.split(',').map((s: string) => s.trim()) : null,
+        software_skills: data.software_skills || null,
         project_type: data.project_type || null,
         experience_level: data.experience_level || null,
         language_requirements: data.language_requirements || null,
@@ -237,8 +239,9 @@ const PostJob = () => {
         apply_email: data.apply_email || null,
 
         // Functional Portal Fields
-        tags: data.tags ? data.tags.split(',').map((t: string) => t.trim()) : null,
+        tags: data.tags || null,
         job_function: data.job_function || null,
+        additional_info: data.additional_info || null,
       };
 
       const { error } = await supabase.from("jobs").insert([jobData]);
@@ -409,14 +412,11 @@ const PostJob = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="description">Job Description *</Label>
-                    <Textarea
-                      id="description"
-                      name="description"
+                    <RichTextEditor
                       value={formData.description}
-                      onChange={handleChange}
+                      onChange={(value) => setFormData({...formData, description: value})}
+                      label="Job Description *"
                       placeholder="Describe the role, requirements, and responsibilities..."
-                      className="min-h-[200px]"
                       required
                     />
                   </div>
@@ -486,29 +486,23 @@ const PostJob = () => {
 
                 <TabsContent value="requirements" className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="required_qualifications">Required Qualifications</Label>
-                    <Textarea
-                      id="required_qualifications"
-                      name="required_qualifications"
+                    <RichTextEditor
                       value={formData.required_qualifications}
-                      onChange={handleChange}
-                      placeholder="Enter required qualifications (comma-separated), e.g., Bachelor's in Computer Science, 3+ years experience"
-                      className="min-h-[100px]"
+                      onChange={(value) => setFormData({...formData, required_qualifications: value})}
+                      label="Required Qualifications"
+                      placeholder="Enter required qualifications, e.g., Bachelor's in Computer Science, 3+ years experience"
                     />
-                    <p className="text-xs text-muted-foreground">Separate multiple qualifications with commas</p>
+                    <p className="text-xs text-muted-foreground">Use the editor to format your qualifications</p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="preferred_qualifications">Preferred Qualifications</Label>
-                    <Textarea
-                      id="preferred_qualifications"
-                      name="preferred_qualifications"
+                    <RichTextEditor
                       value={formData.preferred_qualifications}
-                      onChange={handleChange}
-                      placeholder="Enter preferred qualifications (comma-separated), e.g., Master's degree, Leadership experience"
-                      className="min-h-[100px]"
+                      onChange={(value) => setFormData({...formData, preferred_qualifications: value})}
+                      label="Preferred Qualifications"
+                      placeholder="Enter preferred qualifications, e.g., Master's degree, Leadership experience"
                     />
-                    <p className="text-xs text-muted-foreground">Separate multiple qualifications with commas</p>
+                    <p className="text-xs text-muted-foreground">Use the editor to format your qualifications</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -537,16 +531,13 @@ const PostJob = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="software_skills">Software Skills</Label>
-                      <Textarea
-                        id="software_skills"
-                        name="software_skills"
+                      <RichTextEditor
                         value={formData.software_skills}
-                        onChange={handleChange}
-                        placeholder="Enter software skills (comma-separated), e.g., AutoCAD, MATLAB, Python"
-                        className="min-h-[80px]"
+                        onChange={(value) => setFormData({...formData, software_skills: value})}
+                        label="Software Skills"
+                        placeholder="Enter software skills, e.g., AutoCAD, MATLAB, Python"
                       />
-                      <p className="text-xs text-muted-foreground">Separate multiple skills with commas</p>
+                      <p className="text-xs text-muted-foreground">Use the editor to format your skills</p>
                     </div>
 
                     <div className="space-y-2">
@@ -794,15 +785,22 @@ const PostJob = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="applicant_location_requirements">Applicant Location Requirements</Label>
-                    <Textarea
-                      id="applicant_location_requirements"
-                      name="applicant_location_requirements"
+                    <RichTextEditor
                       value={formData.applicant_location_requirements}
-                      onChange={handleChange}
+                      onChange={(value) => setFormData({...formData, applicant_location_requirements: value})}
+                      label="Applicant Location Requirements"
                       placeholder="e.g., Must be authorized to work in Kenya"
-                      className="min-h-[80px]"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <RichTextEditor
+                      value={formData.additional_info}
+                      onChange={(value) => setFormData({...formData, additional_info: value})}
+                      label="Additional Information"
+                      placeholder="Add any additional information about this job..."
+                    />
+                    <p className="text-xs text-muted-foreground">This will appear below the safety alert on the job details page</p>
                   </div>
 
                   {role === "admin" && (

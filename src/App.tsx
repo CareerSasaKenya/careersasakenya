@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import CreateBlogPost from "./pages/CreateBlogPost";
 import CompanyProfile from "./pages/CompanyProfile";
 import NotFound from "./pages/NotFound";
 
@@ -34,6 +35,8 @@ const App = () => (
             <Route path="/companies/:id" element={<CompanyProfile />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/blog/create" element={<CreateBlogPost />} />
+            <Route path="/blog/edit/:id" element={<CreateBlogPost />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
