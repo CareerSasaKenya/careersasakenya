@@ -295,7 +295,7 @@ const JobDetails = () => {
                     <Briefcase className="h-5 w-5" />
                     Job Description
                   </h3>
-                  <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.description }} />
+                  <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.description }} />
                 </div>
 
                 {job.required_qualifications && (
@@ -306,7 +306,7 @@ const JobDetails = () => {
                         <Award className="h-5 w-5" />
                         Required Qualifications
                       </h3>
-                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.required_qualifications }} />
+                      <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.required_qualifications }} />
                     </div>
                   </>
                 )}
@@ -319,7 +319,7 @@ const JobDetails = () => {
                         <GraduationCap className="h-5 w-5" />
                         Preferred Qualifications
                       </h3>
-                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.preferred_qualifications }} />
+                      <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.preferred_qualifications }} />
                     </div>
                   </>
                 )}
@@ -332,7 +332,7 @@ const JobDetails = () => {
                         <Code className="h-5 w-5" />
                         Required Skills & Software
                       </h3>
-                      <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.software_skills }} />
+                      <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.software_skills }} />
                     </div>
                   </>
                 )}
@@ -417,7 +417,7 @@ const JobDetails = () => {
 
                 {job.additional_info && (
                   <div className="mt-6 rounded-md border border-border bg-muted/30 p-4">
-                    <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.additional_info }} />
+                    <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.additional_info }} />
                   </div>
                 )}
               </CardContent>

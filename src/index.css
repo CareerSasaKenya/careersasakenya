@@ -130,6 +130,36 @@ All colors MUST be HSL.
   html {
     scroll-behavior: smooth;
   }
+
+  /* Preserve list styling for rich text content */
+  .richtext-content ul,
+  .richtext-content ol {
+    @apply list-disc list-inside mb-2;
+  }
+
+  .richtext-content ul ul,
+  .richtext-content ol ol {
+    @apply ml-6;
+  }
+
+  .richtext-content ol {
+    @apply list-decimal;
+  }
+
+  /* Specific fix for job details page */
+  .text-muted-foreground ul,
+  .text-muted-foreground ol {
+    @apply list-disc list-inside ml-4 mb-2;
+  }
+
+  .text-muted-foreground ul ul,
+  .text-muted-foreground ol ol {
+    @apply ml-6;
+  }
+
+  .text-muted-foreground ol {
+    @apply list-decimal;
+  }
 }
 
 @layer utilities {
