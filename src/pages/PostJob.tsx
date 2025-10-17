@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RichTextEditor from "@/components/RichTextEditor";
 
 const PostJob = () => {
+  const { id: jobId } = useParams(); // Get job ID from URL params for editing
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, loading } = useAuth();
@@ -173,15 +174,105 @@ const PostJob = () => {
     enabled: role === "admin",
   });
 
+  // Add query to fetch job data when editing
+  const { data: existingJob, isLoading: isJobLoading } = useQuery({
+    queryKey: ["job", jobId],
+    queryFn: async () => {
+      if (!jobId) return null;
+      
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("id", jobId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!jobId,
+  });
+
+  // Populate form with existing job data when loaded
   useEffect(() => {
-    if (userCompany && role === "employer") {
-      setFormData((prev) => ({
-        ...prev,
-        company: userCompany.name,
-        company_id: userCompany.id,
-      }));
+    if (existingJob) {
+      setFormData({
+        // Core fields
+        title: existingJob.title || "",
+        company: existingJob.company || "",
+        description: existingJob.description || "",
+        company_id: existingJob.company_id || "",
+        
+        // Google Job Posting Fields
+        valid_through: existingJob.valid_through || "",
+        employment_type: existingJob.employment_type || "FULL_TIME",
+        job_location_type: existingJob.job_location_type || "ON_SITE",
+        job_location_country: existingJob.job_location_country || "Kenya",
+        job_location_county: existingJob.job_location_county || "",
+        job_location_city: existingJob.job_location_city || "",
+        job_location_address: existingJob.job_location_address || "",
+        applicant_location_requirements: existingJob.applicant_location_requirements?.toString() || "",
+        direct_apply: existingJob.direct_apply ?? true,
+        application_url: existingJob.application_url || "",
+        
+        // STEM/Health/Architecture Fields
+        industry: existingJob.industry || "",
+        specialization: existingJob.specialization || "",
+        required_qualifications: existingJob.required_qualifications?.toString() || "",
+        preferred_qualifications: existingJob.preferred_qualifications?.toString() || "",
+        education_requirements: existingJob.education_requirements || "",
+        license_requirements: existingJob.license_requirements || "",
+        practice_area: existingJob.practice_area || "",
+        software_skills: existingJob.software_skills?.toString() || "",
+        project_type: existingJob.project_type || "",
+        experience_level: existingJob.experience_level || "Mid",
+        language_requirements: existingJob.language_requirements || "",
+        visa_sponsorship: existingJob.visa_sponsorship || "Not Applicable",
+        
+        // Compensation & Schedule
+        salary_currency: existingJob.salary_currency || "KES",
+        salary_min: existingJob.salary_min?.toString() || "",
+        salary_max: existingJob.salary_max?.toString() || "",
+        salary_period: existingJob.salary_period || "MONTH",
+        work_schedule: existingJob.work_schedule || "",
+        
+        // Application
+        apply_link: existingJob.apply_link || "",
+        apply_email: existingJob.apply_email || "",
+        
+        // Functional Portal Fields
+        tags: existingJob.tags?.toString() || "",
+        job_function: existingJob.job_function || "",
+        status: existingJob.status || "active",
+        additional_info: existingJob.additional_info?.toString() || "",
+      });
+      
+      // Set county and town IDs if available
+      if (existingJob.job_location_county) {
+        const county = counties?.find(c => c.name === existingJob.job_location_county);
+        if (county) setSelectedCountyId(String(county.id));
+      }
+      
+      if (existingJob.job_location_city) {
+        const town = towns?.find(townItem => townItem.name === existingJob.job_location_city);
+        if (town) setSelectedTownId(String(town.id));
+      }
     }
-  }, [userCompany, role]);
+  }, [existingJob, counties, towns]);
+
+  // Update document title when editing
+  const isEditing = !!jobId;
+  useEffect(() => {
+    if (isEditing) {
+      document.title = `Edit Job - CareerSasa Kenya`;
+    } else {
+      document.title = `Post a New Job - CareerSasa Kenya`;
+    }
+    
+    // Reset title on unmount
+    return () => {
+      document.title = "CareerSasa Kenya - Find Your Dream Job in Kenya";
+    };
+  }, [isEditing]);
 
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -244,19 +335,31 @@ const PostJob = () => {
         additional_info: data.additional_info || null,
       };
 
-      console.log("Job data being inserted:", jobData);
+      console.log("Job data being saved:", jobData);
 
-      const { error } = await supabase.from("jobs").insert([jobData]);
-      if (error) throw error;
+      if (jobId) {
+        // Update existing job
+        const { error } = await supabase
+          .from("jobs")
+          .update(jobData)
+          .eq("id", jobId);
+        if (error) throw error;
+      } else {
+        // Create new job
+        const { error } = await supabase
+          .from("jobs")
+          .insert([jobData]);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
-      toast.success("Job posted successfully!");
+      toast.success(jobId ? "Job updated successfully!" : "Job posted successfully!");
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
       navigate("/dashboard");
     },
     onError: (error) => {
-      toast.error("Failed to post job. Please try again.");
-      console.error("Job posting error:", error);
+      toast.error(jobId ? "Failed to update job. Please try again." : "Failed to post job. Please try again.");
+      console.error("Job operation error:", error);
       // Show more detailed error information
       if (error instanceof Error) {
         toast.error(`Error: ${error.message}`);
@@ -293,7 +396,7 @@ const PostJob = () => {
     });
   };
 
-  if (loading) {
+  if (loading || (jobId && isJobLoading)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -309,10 +412,10 @@ const PostJob = () => {
         <Card className="border-border">
           <CardHeader className="px-4 md:px-6">
             <CardTitle className="text-2xl md:text-3xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Post a New Job
+              {isEditing ? "Edit Job" : "Post a New Job"}
             </CardTitle>
             <CardDescription className="text-sm md:text-base">
-              Fill in the details below to post a job opening
+              {isEditing ? "Update the job details below" : "Fill in the details below to post a job opening"}
             </CardDescription>
           </CardHeader>
           
@@ -836,10 +939,10 @@ const PostJob = () => {
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Posting Job...
+                    {isEditing ? "Updating Job..." : "Posting Job..."}
                   </>
                 ) : (
-                  "Post Job"
+                  isEditing ? "Update Job" : "Post Job"
                 )}
               </Button>
             </form>
