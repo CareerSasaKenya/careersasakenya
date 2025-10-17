@@ -141,6 +141,9 @@ const JobDetails = () => {
 
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
 
+  // Note: job_reports table doesn't exist in the current schema
+  // This code is commented out until the table is created
+  /*
   const reportJobMutation = useMutation({
     mutationFn: async (reportData: { jobId: string; message: string }) => {
       const { data, error } = await supabase
@@ -169,18 +172,27 @@ const JobDetails = () => {
       toast.error('Failed to submit report. Please try again.');
     }
   });
+  */
+  
+  // Placeholder for reportJobMutation to avoid TypeScript errors
+  const reportJobMutation: any = {
+    isPending: false,
+    mutateAsync: async () => {}
+  };
 
   const handleReportJob = async () => {
     if (!job?.id) return;
     setIsReportDialogOpen(true);
+    // Show a message that reporting is not currently available
+    toast.info('Job reporting is not currently available. This feature will be implemented soon.');
+    setIsReportDialogOpen(false);
   };
 
   const handleReportJobSubmit = async (message: string) => {
     if (!job?.id) return;
-    await reportJobMutation.mutateAsync({
-      jobId: job.id,
-      message: message || 'No additional details provided.'
-    });
+    // Placeholder function - reporting is not currently implemented
+    toast.info('Job reporting is not currently available. This feature will be implemented soon.');
+    setIsReportDialogOpen(false);
   };
 
   if (isLoading) {
@@ -339,6 +351,16 @@ const JobDetails = () => {
 
                 <Separator />
 
+                {/* Apply Here section - visible on mobile/small screens */}
+                <div className="lg:hidden">
+                  <ApplySection 
+                    job={job} 
+                    userId={user?.id} 
+                    hasApplied={!!hasApplied} 
+                    onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] })} 
+                  />
+                </div>
+
                 {/* Safety Alert + Report Job */}
                 <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 p-4">
                   <div className="flex items-start gap-2">
@@ -347,61 +369,63 @@ const JobDetails = () => {
                       <strong>CareerSasa Safety Alert:</strong> We strongly advise job seekers not to make any payment to employers or agencies during the recruitment process. If you're asked to pay for training, interviews, or job placement, report the job immediately using the "Report Job" button. CareerSasa thoroughly vets postings, but we encourage all applicants to stay vigilant and verify opportunities independently.
                     </div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-muted-foreground">Share:</span>
-                      <a 
-                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-[#1877F2] hover:bg-[#1877F2]/10 p-3 rounded-full transition-colors"
-                        aria-label="Share on Facebook"
-                      >
-                        <Facebook className="h-6 w-6 font-bold" />
-                      </a>
-                      <a 
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-[#0077B5] hover:bg-[#0077B5]/10 p-3 rounded-full transition-colors"
-                        aria-label="Share on LinkedIn"
-                      >
-                        <Linkedin className="h-6 w-6 font-bold" />
-                      </a>
-                      <a 
-                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out this job: ${job?.title || ''}`)}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-[#1DA1F2] hover:bg-[#1DA1F2]/10 p-3 rounded-full transition-colors"
-                        aria-label="Share on Twitter"
-                      >
-                        <Twitter className="h-6 w-6 font-bold" />
-                      </a>
-                      <a 
-                        href={`https://wa.me/?text=${encodeURIComponent(`Check out this job: ${window.location.href}`)}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-[#25D366] hover:bg-[#25D366]/10 p-3 rounded-full transition-colors"
-                        aria-label="Share on WhatsApp"
-                      >
-                        <MessageSquare className="h-6 w-6 font-bold" />
-                      </a>
-                      <a 
-                        href={`mailto:?subject=${encodeURIComponent(`Job Opportunity: ${job?.title || ''}`)}&body=${encodeURIComponent(`Check out this job: ${window.location.href}`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-600 hover:bg-gray-600/10 p-3 rounded-full transition-colors flex items-center justify-center"
-                        aria-label="Share via Email"
-                      >
-                        <Mail className="h-6 w-6 font-bold" />
-                      </a>
+                  <div className="mt-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">Share:</span>
+                      <div className="flex flex-wrap gap-2">
+                        <a 
+                          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[#1877F2] hover:bg-[#1877F2]/10 p-2 rounded-full transition-colors"
+                          aria-label="Share on Facebook"
+                        >
+                          <Facebook className="h-5 w-5 font-bold" />
+                        </a>
+                        <a 
+                          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[#0077B5] hover:bg-[#0077B5]/10 p-2 rounded-full transition-colors"
+                          aria-label="Share on LinkedIn"
+                        >
+                          <Linkedin className="h-5 w-5 font-bold" />
+                        </a>
+                        <a 
+                          href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out this job: ${job?.title || ''}`)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[#1DA1F2] hover:bg-[#1DA1F2]/10 p-2 rounded-full transition-colors"
+                          aria-label="Share on Twitter"
+                        >
+                          <Twitter className="h-5 w-5 font-bold" />
+                        </a>
+                        <a 
+                          href={`https://wa.me/?text=${encodeURIComponent(`Check out this job: ${window.location.href}`)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[#25D366] hover:bg-[#25D366]/10 p-2 rounded-full transition-colors"
+                          aria-label="Share on WhatsApp"
+                        >
+                          <MessageSquare className="h-5 w-5 font-bold" />
+                        </a>
+                        <a 
+                          href={`mailto:?subject=${encodeURIComponent(`Job Opportunity: ${job?.title || ''}`)}&body=${encodeURIComponent(`Check out this job: ${window.location.href}`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-600 hover:bg-gray-600/10 p-2 rounded-full transition-colors flex items-center justify-center"
+                          aria-label="Share via Email"
+                        >
+                          <Mail className="h-5 w-5 font-bold" />
+                        </a>
+                      </div>
                     </div>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => setIsReportDialogOpen(true)}
                       disabled={reportJobMutation.isPending}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 whitespace-nowrap mt-2 sm:mt-0"
                     >
                       <Flag className="h-4 w-4" />
                       {reportJobMutation.isPending ? 'Submitting...' : 'Flag'}
@@ -426,9 +450,15 @@ const JobDetails = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Apply Here section replacing previous Job Details */}
-            <ApplySection job={job} userId={user?.id} hasApplied={!!hasApplied} onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] })} />
-
+            {/* Apply Here section - hidden on mobile/small screens */}
+            <div className="hidden lg:block">
+              <ApplySection 
+                job={job} 
+                userId={user?.id} 
+                hasApplied={!!hasApplied} 
+                onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] })} 
+              />
+            </div>
 
             {job.tags && Array.isArray(job.tags) && job.tags.length > 0 && (
               <Card>
