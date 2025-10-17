@@ -244,6 +244,8 @@ const PostJob = () => {
         additional_info: data.additional_info || null,
       };
 
+      console.log("Job data being inserted:", jobData);
+
       const { error } = await supabase.from("jobs").insert([jobData]);
       if (error) throw error;
     },
@@ -254,7 +256,11 @@ const PostJob = () => {
     },
     onError: (error) => {
       toast.error("Failed to post job. Please try again.");
-      console.error(error);
+      console.error("Job posting error:", error);
+      // Show more detailed error information
+      if (error instanceof Error) {
+        toast.error(`Error: ${error.message}`);
+      }
     },
   });
 

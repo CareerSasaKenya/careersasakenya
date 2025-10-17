@@ -189,6 +189,7 @@ export type Database = {
             | Database["public"]["Enums"]["visa_sponsorship"]
             | null
           work_schedule: string | null
+          additional_info: string | null
         }
         Insert: {
           applicant_location_requirements?: string | null
@@ -250,6 +251,7 @@ export type Database = {
             | Database["public"]["Enums"]["visa_sponsorship"]
             | null
           work_schedule?: string | null
+          additional_info?: string | null
         }
         Update: {
           applicant_location_requirements?: string | null
@@ -311,6 +313,7 @@ export type Database = {
             | Database["public"]["Enums"]["visa_sponsorship"]
             | null
           work_schedule?: string | null
+          additional_info?: string | null
         }
         Relationships: [
           {

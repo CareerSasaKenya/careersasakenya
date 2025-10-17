@@ -81,6 +81,29 @@ To deploy this project to Vercel:
    - `VITE_SUPABASE_PUBLISHABLE_KEY` - Your Supabase publishable key
 6. Deploy!
 
+### Deploy to Netlify
+
+To deploy this project to Netlify:
+
+1. Push your code to a GitHub repository
+2. Go to [Netlify](https://netlify.com/) and create a new site
+3. Connect your repository
+4. Configure the deployment settings:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+5. Add your environment variables in the Netlify dashboard:
+   - `VITE_SUPABASE_URL` - Your Supabase project URL
+   - `VITE_SUPABASE_PUBLISHABLE_KEY` - Your Supabase publishable key
+6. Deploy!
+
+**Note**: For local development, create a `.env.local` file in the root directory with your Supabase credentials:
+```
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+```
+
+The application includes fallback values for these environment variables, but it's recommended to use your own Supabase project for production deployments.
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!
