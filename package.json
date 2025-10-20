@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "vercel-build": "vite build",
-    "netlify-build": "vite build"
+    "netlify-build": "vite build",
+    "test:slug": "npx tsx src/lib/testSlug.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

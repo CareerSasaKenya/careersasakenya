@@ -105,13 +105,13 @@ const JobDetails = () => {
   });
 
   const { data: hasApplied } = useQuery({
-    queryKey: ["application", id, user?.id],
-    enabled: !!user && !!id && role === "candidate",
+    queryKey: ["application", job?.id, user?.id],
+    enabled: !!user && !!job?.id && role === "candidate",
     queryFn: async () => {
       const { data, error } = await supabase
         .from("job_applications")
         .select("id")
-        .eq("job_id", id)
+        .eq("job_id", job!.id)
         .eq("user_id", user!.id)
         .maybeSingle();
       
@@ -120,13 +120,13 @@ const JobDetails = () => {
   });
 
   const { data: isSaved } = useQuery({
-    queryKey: ["saved", id, user?.id],
-    enabled: !!user && !!id && role === "candidate",
+    queryKey: ["saved", job?.id, user?.id],
+    enabled: !!user && !!job?.id && role === "candidate",
     queryFn: async () => {
       const { data, error } = await supabase
         .from("saved_jobs")
         .select("id")
-        .eq("job_id", id)
+        .eq("job_id", job!.id)
         .eq("user_id", user!.id)
         .maybeSingle();
       
@@ -136,15 +136,15 @@ const JobDetails = () => {
 
   const applyMutation = useMutation({
     mutationFn: async () => {
-      if (!user || !id) throw new Error("Not authenticated");
+      if (!user || !job?.id) throw new Error("Not authenticated");
       const { error } = await supabase
         .from("job_applications")
-        .insert({ job_id: id, user_id: user.id });
+        .insert({ job_id: job.id, user_id: user.id });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Application submitted successfully!");
-      queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["application", job?.id, user?.id] });
     },
     onError: () => {
       toast.error("Failed to submit application");
@@ -153,24 +153,24 @@ const JobDetails = () => {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      if (!user || !id) throw new Error("Not authenticated");
+      if (!user || !job?.id) throw new Error("Not authenticated");
       if (isSaved) {
         const { error } = await supabase
           .from("saved_jobs")
           .delete()
-          .eq("job_id", id)
+          .eq("job_id", job.id)
           .eq("user_id", user.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from("saved_jobs")
-          .insert({ job_id: id, user_id: user.id });
+          .insert({ job_id: job.id, user_id: user.id });
         if (error) throw error;
       }
     },
     onSuccess: () => {
       toast.success(isSaved ? "Job removed from saved" : "Job saved successfully!");
-      queryClient.invalidateQueries({ queryKey: ["saved", id, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["saved", job?.id, user?.id] });
     },
     onError: () => {
       toast.error("Failed to save job");
