@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Building2, DollarSign, FileText, Clock, ExternalLink, Mail, Briefcase } from "lucide-react";
+import { stripHtmlTags } from "@/lib/textUtils";
 
 interface JobCardProps {
   id: string;
@@ -201,7 +202,7 @@ const JobCard = ({
       <CardContent className="pt-0">
         {/* Short description (2-3 sentences) */}
         <p className="text-muted-foreground line-clamp-3 mb-4 leading-relaxed">
-          {description}
+          {stripHtmlTags(description)}
         </p>
 
         {/* Secondary chips: top 3 skills (optional) */}
