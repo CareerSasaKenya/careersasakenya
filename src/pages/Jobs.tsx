@@ -78,6 +78,7 @@ const Jobs = () => {
                       : undefined
                   }
                   department={job.job_function}
+                  jobSlug={job.job_slug}
                 />
               </div>
             ))}

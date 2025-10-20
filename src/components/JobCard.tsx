@@ -31,6 +31,7 @@ interface JobCardProps {
   applyLink?: string | null;
   skillsTop3?: string[] | null; // optional: top 3 skills
   department?: string | null;
+  jobSlug?: string | null; // SEO-friendly slug
 }
 
 const formatCurrency = (amount?: number | null, currency?: string | null) => {
@@ -90,6 +91,7 @@ const JobCard = ({
   applyLink,
   skillsTop3,
   department,
+  jobSlug,
 }: JobCardProps) => {
   const displayLocation = locationType
     ? `${location || ""}${location && locationType ? " • " : ""}${toTitleCase(locationType)}`
@@ -121,9 +123,11 @@ const JobCard = ({
 
   const hasExternalApply = !!(applyEmail || applyLink || applicationUrl);
 
+  // Use job slug for SEO-friendly URLs, fallback to ID
+  const jobUrl = jobSlug ? `/jobs/${jobSlug}` : `/jobs/${id}`;
 
   return (
-    <Link to={`/jobs/${id}`} className="block">
+    <Link to={jobUrl} className="block">
       <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/50 hover:scale-[1.02] overflow-hidden h-full">
       <CardHeader className="pb-3">
         {/* Title (prominent) */}

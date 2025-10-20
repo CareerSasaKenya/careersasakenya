@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +22,7 @@ import JobCard from "@/components/JobCard";
 
 const JobDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { role } = useUserRole();
   const queryClient = useQueryClient();
@@ -29,7 +30,8 @@ const JobDetails = () => {
   const { data: job, isLoading } = useQuery({
     queryKey: ["job", id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First try to fetch by slug (new format)
+      let { data, error } = await supabase
         .from("jobs")
         .select(`
           *,
@@ -39,8 +41,33 @@ const JobDetails = () => {
             logo
           )
         `)
-        .eq("id", id)
+        .eq("job_slug", id) // Try slug first
         .maybeSingle();
+      
+      // If not found by slug, try by ID (for backward compatibility)
+      if (!data && id) {
+        // Check if it looks like a UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (uuidRegex.test(id)) {
+          ({ data, error } = await supabase
+            .from("jobs")
+            .select(`
+              *,
+              companies (
+                id,
+                name,
+                logo
+              )
+            `)
+            .eq("id", id)
+            .maybeSingle());
+          
+          // If found by ID, redirect to the slug version (301 redirect)
+          if (data && data.job_slug) {
+            navigate(`/jobs/${data.job_slug}`, { replace: true });
+          }
+        }
+      }
       
       if (error) throw error;
       return data;
@@ -48,8 +75,8 @@ const JobDetails = () => {
   });
 
   const { data: relatedJobs } = useQuery({
-    queryKey: ["relatedJobs", id, job?.industry, job?.job_function],
-    enabled: !!id && (!!job?.industry || !!job?.job_function),
+    queryKey: ["relatedJobs", job?.id, job?.industry, job?.job_function],
+    enabled: !!job?.id && (!!job?.industry || !!job?.job_function),
     queryFn: async () => {
       let query = supabase
         .from("jobs")
@@ -61,7 +88,7 @@ const JobDetails = () => {
             logo
           )
         `)
-        .neq("id", id)
+        .neq("id", job!.id)
         .limit(6);
 
       // Prioritize jobs with matching industry or job_function
@@ -487,11 +514,11 @@ const JobDetails = () => {
                 job={job} 
                 userId={user?.id} 
                 hasApplied={!!hasApplied} 
-                onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] })} 
+                onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", job?.id, user?.id] })} 
               />
             </div>
 
-            {job.tags && Array.isArray(job.tags) && job.tags.length > 0 && (
+            {job?.tags && Array.isArray(job.tags) && job.tags.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Tags</CardTitle>
@@ -514,7 +541,7 @@ const JobDetails = () => {
             job={job} 
             userId={user?.id} 
             hasApplied={!!hasApplied} 
-            onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] })} 
+            onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", job?.id, user?.id] })} 
           />
         </div>
 
@@ -555,6 +582,7 @@ const JobDetails = () => {
                       : undefined
                   }
                   department={relatedJob.job_function}
+                  jobSlug={relatedJob.job_slug}
                 />
               ))}
             </div>
