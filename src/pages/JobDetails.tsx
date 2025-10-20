@@ -479,8 +479,8 @@ const JobDetails = () => {
             </Card>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar - Made sticky for desktop */}
+          <div className="lg:sticky lg:top-24 lg:self-start lg:h-fit space-y-6">
             {/* Apply Here section - hidden on mobile/small screens */}
             <div className="hidden lg:block">
               <ApplySection 
@@ -506,6 +506,16 @@ const JobDetails = () => {
               </Card>
             )}
           </div>
+        </div>
+
+        {/* Apply Here section - visible on mobile/small screens */}
+        <div className="lg:hidden mt-6">
+          <ApplySection 
+            job={job} 
+            userId={user?.id} 
+            hasApplied={!!hasApplied} 
+            onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", id, user?.id] })} 
+          />
         </div>
 
         {/* Related Opportunities Section */}
