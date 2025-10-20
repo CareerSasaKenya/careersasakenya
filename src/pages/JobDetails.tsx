@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ReportJobDialog } from "@/components/ReportJobDialog";
+import JobCard from "@/components/JobCard";
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -41,6 +42,36 @@ const JobDetails = () => {
         .eq("id", id)
         .maybeSingle();
       
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: relatedJobs } = useQuery({
+    queryKey: ["relatedJobs", id, job?.industry, job?.job_function],
+    enabled: !!id && (!!job?.industry || !!job?.job_function),
+    queryFn: async () => {
+      let query = supabase
+        .from("jobs")
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo
+          )
+        `)
+        .neq("id", id)
+        .limit(6);
+
+      // Prioritize jobs with matching industry or job_function
+      if (job?.industry) {
+        query = query.eq("industry", job.industry);
+      } else if (job?.job_function) {
+        query = query.eq("job_function", job.job_function);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -476,6 +507,49 @@ const JobDetails = () => {
             )}
           </div>
         </div>
+
+        {/* Related Opportunities Section */}
+        {relatedJobs && relatedJobs.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">Related Opportunities</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedJobs.map((relatedJob: any) => (
+                <JobCard
+                  key={relatedJob.id}
+                  id={relatedJob.id}
+                  title={relatedJob.title}
+                  company={relatedJob.companies?.name || relatedJob.company}
+                  location={relatedJob.location}
+                  description={relatedJob.description}
+                  salary={relatedJob.salary || undefined}
+                  companyId={relatedJob.company_id}
+                  companyLogo={relatedJob.companies?.logo}
+                  industry={relatedJob.industry}
+                  locationType={relatedJob.job_location_type}
+                  employmentType={relatedJob.employment_type}
+                  salaryMin={relatedJob.salary_min}
+                  salaryMax={relatedJob.salary_max}
+                  salaryCurrency={relatedJob.salary_currency}
+                  salaryPeriod={relatedJob.salary_period}
+                  experienceLevel={relatedJob.experience_level}
+                  datePosted={relatedJob.date_posted}
+                  validThrough={relatedJob.valid_through}
+                  applicationUrl={relatedJob.application_url}
+                  applyEmail={relatedJob.apply_email}
+                  applyLink={relatedJob.apply_link}
+                  skillsTop3={
+                    Array.isArray(relatedJob.software_skills)
+                      ? (relatedJob.software_skills as unknown[])
+                          .filter((s): s is string => typeof s === "string")
+                          .slice(0, 3)
+                      : undefined
+                  }
+                  department={relatedJob.job_function}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
