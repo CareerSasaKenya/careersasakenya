@@ -798,6 +798,111 @@ const ApplySection = ({ job, userId, hasApplied, onApplied }: { job: Job; userId
           <Button onClick={() => window.open(job.application_url, "_blank")} className="w-full bg-gradient-primary hover:opacity-90">
             <ExternalLink className="mr-2 h-5 w-5" /> Apply on Company Site
           </Button>
+          {(job?.apply_email || job?.apply_link) && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground mb-2">Alternative ways to apply:</p>
+              {job?.apply_email && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-2"
+                  onClick={() => window.location.href = `mailto:${job.apply_email}?subject=Application for ${job.title}`}
+                >
+                  <Mail className="mr-2 h-4 w-4" /> Apply via Email
+                </Button>
+              )}
+              {job?.apply_link && (
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => window.open(job.apply_link, "_blank")}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" /> Apply via External Link
+                </Button>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (job?.apply_link) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Apply Here</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => window.open(job.apply_link, "_blank")} className="w-full bg-gradient-primary hover:opacity-90">
+            <ExternalLink className="mr-2 h-5 w-5" /> Apply via External Link
+          </Button>
+          {(job?.apply_email || job?.application_url) && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground mb-2">Alternative ways to apply:</p>
+              {job?.apply_email && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-2"
+                  onClick={() => window.location.href = `mailto:${job.apply_email}?subject=Application for ${job.title}`}
+                >
+                  <Mail className="mr-2 h-4 w-4" /> Apply via Email
+                </Button>
+              )}
+              {job?.application_url && (
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => window.open(job.application_url, "_blank")}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" /> Apply on Company Site
+                </Button>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (job?.apply_email) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Apply Here</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button 
+            onClick={() => window.location.href = `mailto:${job.apply_email}?subject=Application for ${job.title}`}
+            className="w-full bg-gradient-primary hover:opacity-90"
+          >
+            <Mail className="mr-2 h-5 w-5" /> Apply via Email
+          </Button>
+          <p className="text-sm text-muted-foreground mt-2 text-center">
+            Clicking above will open your email client with a pre-filled subject line
+          </p>
+          {(job?.application_url || job?.apply_link) && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground mb-2">Alternative ways to apply:</p>
+              {job?.application_url && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-2"
+                  onClick={() => window.open(job.application_url, "_blank")}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" /> Apply on Company Site
+                </Button>
+              )}
+              {job?.apply_link && (
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => window.open(job.apply_link, "_blank")}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" /> Apply via External Link
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     );
@@ -859,7 +964,9 @@ const ApplySection = ({ job, userId, hasApplied, onApplied }: { job: Job; userId
         <div className="pt-2">
           {hasExternal ? (
             <Button onClick={() => {
-              if (job?.apply_link) {
+              if (job?.application_url) {
+                window.open(job.application_url, "_blank");
+              } else if (job?.apply_link) {
                 window.open(job.apply_link, "_blank");
               } else if (job?.apply_email) {
                 window.location.href = `mailto:${job.apply_email}?subject=Application for ${job.title}`;

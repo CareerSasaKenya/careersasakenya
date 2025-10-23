@@ -380,8 +380,8 @@ const PostJob = () => {
       return;
     }
     
-    if (!formData.direct_apply && !formData.application_url) {
-      toast.error("Please provide an application URL when direct apply is disabled");
+    if (!formData.direct_apply && !formData.application_url && !formData.apply_email && !formData.apply_link) {
+      toast.error("Please provide at least one application method when direct apply is disabled");
       return;
     }
     
