@@ -718,16 +718,6 @@ const PostJob = () => {
                     </div>
 
                     <div className="space-y-2">
-                      {/* Placeholder for grid layout */}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      {/* Placeholder for grid layout */}
-                    </div>
-
-                    <div className="space-y-2">
                       <Label htmlFor="language_requirements">Language Requirements</Label>
                       <Input
                         id="language_requirements"
