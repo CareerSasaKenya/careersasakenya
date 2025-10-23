@@ -752,31 +752,26 @@ const PostJob = () => {
                     />
                   </div>
 
-                  {/* Additional Information section moved from application tab */}
-                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
-                    <p className="text-sm font-medium">Additional Information</p>
-                    
-                    <div className="space-y-2">
-                      <RichTextEditor
-                        value={formData.additional_info}
-                        onChange={(value) => setFormData({...formData, additional_info: value})}
-                        label="Additional Information"
-                        placeholder="Add any additional information about this job, such as career tips, FAQs, etc..."
-                      />
-                      <p className="text-xs text-muted-foreground">This will appear below the safety alert on the job details page</p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="tags">Tags (Keywords)</Label>
-                      <Input
-                        id="tags"
-                        name="tags"
-                        value={formData.tags}
-                        onChange={handleChange}
-                        placeholder="e.g., engineering, remote, senior (comma-separated)"
-                      />
-                      <p className="text-xs text-muted-foreground">Separate multiple tags with commas</p>
-                    </div>
+                  <div className="space-y-2">
+                    <RichTextEditor
+                      value={formData.additional_info}
+                      onChange={(value) => setFormData({...formData, additional_info: value})}
+                      label="Additional Information"
+                      placeholder="Add any additional information about this job, such as career tips, FAQs, etc..."
+                    />
+                    <p className="text-xs text-muted-foreground">This will appear below the safety alert on the job details page</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="tags">Tags (Keywords)</Label>
+                    <Input
+                      id="tags"
+                      name="tags"
+                      value={formData.tags}
+                      onChange={handleChange}
+                      placeholder="e.g., engineering, remote, senior (comma-separated)"
+                    />
+                    <p className="text-xs text-muted-foreground">Separate multiple tags with commas</p>
                   </div>
                 </TabsContent>
 
