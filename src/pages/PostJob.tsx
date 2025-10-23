@@ -757,6 +757,16 @@ const PostJob = () => {
                     <p className="text-sm font-medium">Additional Information</p>
                     
                     <div className="space-y-2">
+                      <RichTextEditor
+                        value={formData.additional_info}
+                        onChange={(value) => setFormData({...formData, additional_info: value})}
+                        label="Additional Information"
+                        placeholder="Add any additional information about this job, such as career tips, FAQs, etc..."
+                      />
+                      <p className="text-xs text-muted-foreground">This will appear below the safety alert on the job details page</p>
+                    </div>
+                    
+                    <div className="space-y-2">
                       <Label htmlFor="tags">Tags (Keywords)</Label>
                       <Input
                         id="tags"
@@ -825,7 +835,6 @@ const PostJob = () => {
                     </div>
                   </div>
 
-                  {/* Additional Information section moved to requirements tab */}
                   {/* Applicant Location Requirements moved to requirements tab */}
 
                   {role === "admin" && (
