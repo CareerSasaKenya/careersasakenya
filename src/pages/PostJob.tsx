@@ -433,7 +433,7 @@ const PostJob = () => {
               <Tabs defaultValue="basic" className="w-full">
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="basic">Basic</TabsTrigger>
-                  <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="details">Further Details</TabsTrigger>
                   <TabsTrigger value="requirements">Requirements</TabsTrigger>
                   <TabsTrigger value="application">Application</TabsTrigger>
                 </TabsList>
@@ -591,6 +591,112 @@ const PostJob = () => {
                       />
                     </div>
                   </div>
+
+                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                    <p className="text-sm font-medium">Compensation Details</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_min">Minimum Salary</Label>
+                        <Input
+                          id="salary_min"
+                          name="salary_min"
+                          type="number"
+                          value={formData.salary_min}
+                          onChange={handleChange}
+                          placeholder="50000"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_max">Maximum Salary</Label>
+                        <Input
+                          id="salary_max"
+                          name="salary_max"
+                          type="number"
+                          value={formData.salary_max}
+                          onChange={handleChange}
+                          placeholder="80000"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_period">Period</Label>
+                        <Select value={formData.salary_period} onValueChange={(value) => setFormData({...formData, salary_period: value})}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="HOUR">Per Hour</SelectItem>
+                            <SelectItem value="DAY">Per Day</SelectItem>
+                            <SelectItem value="WEEK">Per Week</SelectItem>
+                            <SelectItem value="MONTH">Per Month</SelectItem>
+                            <SelectItem value="YEAR">Per Year</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="work_schedule">Work Schedule</Label>
+                      <Input
+                        id="work_schedule"
+                        name="work_schedule"
+                        value={formData.work_schedule}
+                        onChange={handleChange}
+                        placeholder="e.g., Monday–Friday 8:00–17:00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                    <p className="text-sm font-medium">Location Details</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="county">County</Label>
+                        <Select value={selectedCountyId} onValueChange={setSelectedCountyId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select county" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {counties?.map(county => (
+                              <SelectItem key={county.id} value={String(county.id)}>{county.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="city">City/Town</Label>
+                        <Select 
+                          value={selectedTownId} 
+                          onValueChange={setSelectedTownId}
+                          disabled={!selectedCountyId}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={selectedCountyId ? "Select town" : "Select county first"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {towns?.map(town => (
+                              <SelectItem key={town.id} value={String(town.id)}>{town.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="job_location_address">Full Address</Label>
+                      <Input
+                        id="job_location_address"
+                        name="job_location_address"
+                        value={formData.job_location_address}
+                        onChange={handleChange}
+                        placeholder="e.g., 123 Main Street, Building A"
+                      />
+                    </div>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="requirements" className="space-y-4 mt-4">
@@ -701,112 +807,7 @@ const PostJob = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
-                    <p className="text-sm font-medium">Compensation Details</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="salary_min">Minimum Salary</Label>
-                        <Input
-                          id="salary_min"
-                          name="salary_min"
-                          type="number"
-                          value={formData.salary_min}
-                          onChange={handleChange}
-                          placeholder="50000"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="salary_max">Maximum Salary</Label>
-                        <Input
-                          id="salary_max"
-                          name="salary_max"
-                          type="number"
-                          value={formData.salary_max}
-                          onChange={handleChange}
-                          placeholder="80000"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="salary_period">Period</Label>
-                        <Select value={formData.salary_period} onValueChange={(value) => setFormData({...formData, salary_period: value})}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="HOUR">Per Hour</SelectItem>
-                            <SelectItem value="DAY">Per Day</SelectItem>
-                            <SelectItem value="WEEK">Per Week</SelectItem>
-                            <SelectItem value="MONTH">Per Month</SelectItem>
-                            <SelectItem value="YEAR">Per Year</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="work_schedule">Work Schedule</Label>
-                      <Input
-                        id="work_schedule"
-                        name="work_schedule"
-                        value={formData.work_schedule}
-                        onChange={handleChange}
-                        placeholder="e.g., Monday–Friday 8:00–17:00"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
-                    <p className="text-sm font-medium">Location Details</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="county">County</Label>
-                        <Select value={selectedCountyId} onValueChange={setSelectedCountyId}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select county" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {counties?.map(county => (
-                              <SelectItem key={county.id} value={String(county.id)}>{county.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="city">City/Town</Label>
-                        <Select 
-                          value={selectedTownId} 
-                          onValueChange={setSelectedTownId}
-                          disabled={!selectedCountyId}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder={selectedCountyId ? "Select town" : "Select county first"} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {towns?.map(town => (
-                              <SelectItem key={town.id} value={String(town.id)}>{town.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="job_location_address">Full Address</Label>
-                      <Input
-                        id="job_location_address"
-                        name="job_location_address"
-                        value={formData.job_location_address}
-                        onChange={handleChange}
-                        placeholder="e.g., 123 Main Street, Building A"
-                      />
-                    </div>
-                  </div>
-
+                  {/* Additional Information section moved from application tab */}
                   <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
                     <p className="text-sm font-medium">Additional Information</p>
                     
