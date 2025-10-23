@@ -44,7 +44,6 @@ const PostJob = () => {
     application_url: "",
     // STEM/Health/Architecture Fields
     industry: "",
-    specialization: "",
     required_qualifications: "",
     preferred_qualifications: "",
     education_requirements: "",
@@ -211,7 +210,6 @@ const PostJob = () => {
         
         // STEM/Health/Architecture Fields
         industry: existingJob.industry || "",
-        specialization: existingJob.specialization || "",
         required_qualifications: existingJob.required_qualifications?.toString() || "",
         preferred_qualifications: existingJob.preferred_qualifications?.toString() || "",
         education_requirements: existingJob.education_requirements || "",
@@ -295,7 +293,6 @@ const PostJob = () => {
 
         // STEM/Health/Architecture Fields
         industry: data.industry || null,
-        specialization: data.specialization || null,
         required_qualifications: data.required_qualifications || null,
         preferred_qualifications: data.preferred_qualifications || null,
         education_requirements: data.education_requirements || null,
@@ -494,14 +491,17 @@ const PostJob = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="specialization">Specialization</Label>
-                      <Input
-                        id="specialization"
-                        name="specialization"
-                        value={formData.specialization}
-                        onChange={handleChange}
-                        placeholder="e.g., Mechanical Engineering, Pediatrics"
-                      />
+                      <Label htmlFor="job_function">Job Function</Label>
+                      <Select value={formData.job_function} onValueChange={(value) => setFormData({...formData, job_function: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select job function" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {jobFunctions?.map(func => (
+                            <SelectItem key={func.id} value={func.name}>{func.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
@@ -756,20 +756,6 @@ const PostJob = () => {
                   <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
                     <p className="text-sm font-medium">Additional Information</p>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="job_function">Job Function</Label>
-                      <Select value={formData.job_function} onValueChange={(value) => setFormData({...formData, job_function: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select job function" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {jobFunctions?.map(func => (
-                            <SelectItem key={func.id} value={func.name}>{func.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="tags">Tags (Keywords)</Label>
                       <Input
