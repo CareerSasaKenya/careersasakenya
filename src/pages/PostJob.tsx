@@ -807,6 +807,16 @@ const PostJob = () => {
                     </Select>
                   </div>
 
+                  {/* Applicant Location Requirements moved from application tab */}
+                  <div className="space-y-2">
+                    <RichTextEditor
+                      value={formData.applicant_location_requirements}
+                      onChange={(value) => setFormData({...formData, applicant_location_requirements: value})}
+                      label="Applicant Location Requirements"
+                      placeholder="e.g., Must be authorized to work in Kenya"
+                    />
+                  </div>
+
                   {/* Additional Information section moved from application tab */}
                   <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
                     <p className="text-sm font-medium">Additional Information</p>
@@ -894,24 +904,8 @@ const PostJob = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <RichTextEditor
-                      value={formData.applicant_location_requirements}
-                      onChange={(value) => setFormData({...formData, applicant_location_requirements: value})}
-                      label="Applicant Location Requirements"
-                      placeholder="e.g., Must be authorized to work in Kenya"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <RichTextEditor
-                      value={formData.additional_info}
-                      onChange={(value) => setFormData({...formData, additional_info: value})}
-                      label="Additional Information"
-                      placeholder="Add any additional information about this job..."
-                    />
-                    <p className="text-xs text-muted-foreground">This will appear below the safety alert on the job details page</p>
-                  </div>
+                  {/* Additional Information section moved to requirements tab */}
+                  {/* Applicant Location Requirements moved to requirements tab */}
 
                   {role === "admin" && (
                     <div className="space-y-2">
