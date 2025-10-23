@@ -48,13 +48,8 @@ const PostJob = () => {
     required_qualifications: "",
     preferred_qualifications: "",
     education_requirements: "",
-    license_requirements: "",
-    practice_area: "",
-    software_skills: "",
-    project_type: "",
     experience_level: "Mid",
     language_requirements: "",
-    visa_sponsorship: "Not Applicable",
     // Compensation & Schedule
     salary_currency: "KES",
     salary_min: "",
@@ -220,13 +215,8 @@ const PostJob = () => {
         required_qualifications: existingJob.required_qualifications?.toString() || "",
         preferred_qualifications: existingJob.preferred_qualifications?.toString() || "",
         education_requirements: existingJob.education_requirements || "",
-        license_requirements: existingJob.license_requirements || "",
-        practice_area: existingJob.practice_area || "",
-        software_skills: existingJob.software_skills?.toString() || "",
-        project_type: existingJob.project_type || "",
         experience_level: existingJob.experience_level || "Mid",
         language_requirements: existingJob.language_requirements || "",
-        visa_sponsorship: existingJob.visa_sponsorship || "Not Applicable",
         
         // Compensation & Schedule
         salary_currency: existingJob.salary_currency || "KES",
@@ -309,13 +299,8 @@ const PostJob = () => {
         required_qualifications: data.required_qualifications || null,
         preferred_qualifications: data.preferred_qualifications || null,
         education_requirements: data.education_requirements || null,
-        license_requirements: data.license_requirements || null,
-        practice_area: data.practice_area || null,
-        software_skills: data.software_skills || null,
-        project_type: data.project_type || null,
         experience_level: data.experience_level || null,
         language_requirements: data.language_requirements || null,
-        visa_sponsorship: data.visa_sponsorship,
 
         // Compensation & Schedule
         salary_currency: data.salary_currency,
@@ -733,26 +718,13 @@ const PostJob = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="license_requirements">License Requirements</Label>
-                      <Input
-                        id="license_requirements"
-                        name="license_requirements"
-                        value={formData.license_requirements}
-                        onChange={handleChange}
-                        placeholder="e.g., Registered Nurse License"
-                      />
+                      {/* Placeholder for grid layout */}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <RichTextEditor
-                        value={formData.software_skills}
-                        onChange={(value) => setFormData({...formData, software_skills: value})}
-                        label="Software Skills"
-                        placeholder="Enter software skills, e.g., AutoCAD, MATLAB, Python"
-                      />
-                      <p className="text-xs text-muted-foreground">Use the editor to format your skills</p>
+                      {/* Placeholder for grid layout */}
                     </div>
 
                     <div className="space-y-2">
@@ -767,45 +739,8 @@ const PostJob = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="practice_area">Practice Area (Health)</Label>
-                      <Input
-                        id="practice_area"
-                        name="practice_area"
-                        value={formData.practice_area}
-                        onChange={handleChange}
-                        placeholder="e.g., Pediatrics, Surgery"
-                      />
-                      <p className="text-xs text-muted-foreground">For health jobs only</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="project_type">Project Type (Architecture)</Label>
-                      <Input
-                        id="project_type"
-                        name="project_type"
-                        value={formData.project_type}
-                        onChange={handleChange}
-                        placeholder="e.g., Residential, Commercial"
-                      />
-                      <p className="text-xs text-muted-foreground">For architecture jobs only</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="visa_sponsorship">Visa Sponsorship</Label>
-                    <Select value={formData.visa_sponsorship} onValueChange={(value) => setFormData({...formData, visa_sponsorship: value})}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Yes">Yes</SelectItem>
-                        <SelectItem value="No">No</SelectItem>
-                        <SelectItem value="Not Applicable">Not Applicable</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Practice Area (Health) and Project Type (Architecture) fields removed */}
+                  {/* Visa Sponsorship field removed */}
 
                   {/* Applicant Location Requirements moved from application tab */}
                   <div className="space-y-2">
