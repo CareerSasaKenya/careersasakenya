@@ -32,9 +32,9 @@ const MobileNav = () => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] sm:w-[350px] rounded-l-xl">
+      <SheetContent side="right" className="w-[280px] sm:w-[350px] rounded-l-xl p-0">
         <div className="flex flex-col h-full">
-          <div className="flex items-center gap-3 mb-8 pb-6 border-b">
+          <div className="flex items-center gap-3 p-6 pb-4 border-b">
             <div className="p-2.5 rounded-xl bg-gradient-primary shadow-glow">
               <Briefcase className="h-6 w-6 text-primary-foreground" />
             </div>
@@ -43,14 +43,14 @@ const MobileNav = () => {
             </span>
           </div>
 
-          <nav className="flex flex-col gap-2 flex-1">
+          <nav className="flex flex-col gap-1 p-6 flex-1 overflow-y-auto">
             <Link to="/jobs" onClick={closeSheet}>
-              <Button variant="ghost" className="w-full justify-start text-base">
+              <Button variant="ghost" className="w-full justify-start text-base h-12">
                 Browse Jobs
               </Button>
             </Link>
             <Link to="/blog" onClick={closeSheet}>
-              <Button variant="ghost" className="w-full justify-start text-base">
+              <Button variant="ghost" className="w-full justify-start text-base h-12">
                 Blog
               </Button>
             </Link>
@@ -58,14 +58,14 @@ const MobileNav = () => {
             {user ? (
               <>
                 <Link to="/dashboard" onClick={closeSheet}>
-                  <Button variant="ghost" className="w-full justify-start text-base">
+                  <Button variant="ghost" className="w-full justify-start text-base h-12">
                     Dashboard
                   </Button>
                 </Link>
-                <div className="mt-4">
+                <div className="mt-auto pt-4">
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-base hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive"
+                    className="w-full justify-start text-base h-12 hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive"
                     onClick={handleSignOut}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
@@ -74,14 +74,14 @@ const MobileNav = () => {
                 </div>
               </>
             ) : (
-              <div className="mt-4 flex flex-col gap-3">
+              <div className="mt-auto pt-4 flex flex-col gap-3">
                 <Link to="/auth" onClick={closeSheet}>
-                  <Button variant="ghost" className="w-full text-base">
+                  <Button variant="ghost" className="w-full text-base h-12">
                     Sign In
                   </Button>
                 </Link>
                 <Link to="/auth" onClick={closeSheet}>
-                  <Button variant="gradient" className="w-full text-base">
+                  <Button variant="gradient" className="w-full text-base h-12">
                     Get Started
                   </Button>
                 </Link>
