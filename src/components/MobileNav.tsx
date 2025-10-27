@@ -32,7 +32,7 @@ const MobileNav = () => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+      <SheetContent side="right" className="w-[280px] sm:w-[350px] rounded-l-xl">
         <div className="flex flex-col h-full">
           <div className="flex items-center gap-3 mb-8 pb-6 border-b">
             <div className="p-2.5 rounded-xl bg-gradient-primary shadow-glow">
@@ -43,7 +43,7 @@ const MobileNav = () => {
             </span>
           </div>
 
-          <nav className="flex flex-col gap-3 flex-1">
+          <nav className="flex flex-col gap-2 flex-1">
             <Link to="/jobs" onClick={closeSheet}>
               <Button variant="ghost" className="w-full justify-start text-base">
                 Browse Jobs
@@ -62,17 +62,19 @@ const MobileNav = () => {
                     Dashboard
                   </Button>
                 </Link>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-base hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive mt-auto"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </Button>
+                <div className="mt-4">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-base hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </Button>
+                </div>
               </>
             ) : (
-              <div className="flex flex-col gap-3 mt-auto">
+              <div className="mt-4 flex flex-col gap-3">
                 <Link to="/auth" onClick={closeSheet}>
                   <Button variant="ghost" className="w-full text-base">
                     Sign In
