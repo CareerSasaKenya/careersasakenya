@@ -62,7 +62,7 @@ const MobileNav = () => {
                     Dashboard
                   </Button>
                 </Link>
-                <div className="mt-auto pt-4">
+                <div className="pt-4 mt-4 border-t">
                   <Button
                     variant="outline"
                     className="w-full justify-start text-base h-12 hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive"
