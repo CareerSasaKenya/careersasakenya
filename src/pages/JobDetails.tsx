@@ -562,7 +562,7 @@ const JobDetails = () => {
           <div className="mt-12">
             <h2 className="text-2xl font-bold mb-6">Related Opportunities</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedJobs.map((relatedJob: any) => (
+              {relatedJobs.slice(0, 6).map((relatedJob: any) => (
                 <JobCard
                   key={relatedJob.id}
                   id={relatedJob.id}
@@ -597,6 +597,13 @@ const JobDetails = () => {
                   jobSlug={relatedJob.job_slug}
                 />
               ))}
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Link to="/jobs">
+                <Button variant="outline" size="lg" className="border-2 hover:bg-gradient-primary hover:text-primary-foreground hover:border-transparent transition-all duration-300">
+                  Browse More Opportunities
+                </Button>
+              </Link>
             </div>
           </div>
         )}
