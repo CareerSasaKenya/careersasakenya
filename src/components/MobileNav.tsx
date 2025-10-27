@@ -34,16 +34,16 @@ const MobileNav = () => {
       </SheetTrigger>
       <SheetContent side="right" className="w-3/4 max-w-[350px]">
         <div className="flex flex-col h-full">
-          <div className="flex items-center gap-3 mb-8 pb-6 border-b">
-            <div className="p-2.5 rounded-xl bg-gradient-primary shadow-glow">
-              <Briefcase className="h-6 w-6 text-primary-foreground" />
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b">
+            <div className="p-2 rounded-lg bg-gradient-primary shadow-glow">
+              <Briefcase className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
               CareerSasa
             </span>
           </div>
 
-          <nav className="flex flex-col gap-3 flex-1">
+          <nav className="flex flex-col gap-1 flex-1">
             <Link to="/jobs" onClick={closeSheet}>
               <Button variant="ghost" className="w-full justify-start text-base">
                 Browse Jobs
@@ -62,7 +62,7 @@ const MobileNav = () => {
                     Dashboard
                   </Button>
                 </Link>
-                <div className="mt-auto">
+                <div className="pt-4 mt-2 border-t">
                   <Button
                     variant="outline"
                     className="w-full justify-start text-base hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive"
@@ -74,9 +74,9 @@ const MobileNav = () => {
                 </div>
               </>
             ) : (
-              <div className="flex flex-col gap-3 mt-auto">
+              <div className="pt-4 mt-2 border-t">
                 <Link to="/auth" onClick={closeSheet}>
-                  <Button variant="ghost" className="w-full text-base">
+                  <Button variant="ghost" className="w-full text-base mb-2">
                     Sign In
                   </Button>
                 </Link>
