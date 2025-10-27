@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Building2, DollarSign, FileText, Clock, ExternalLink, Mail, Briefcase } from "lucide-react";
+import { MapPin, Building2, DollarSign, FileText, Clock, ExternalLink, Mail, Briefcase, GraduationCap } from "lucide-react";
 import { stripHtmlTags } from "@/lib/textUtils";
 
 interface JobCardProps {
@@ -32,6 +32,7 @@ interface JobCardProps {
   skillsTop3?: string[] | null; // optional: top 3 skills
   department?: string | null;
   jobSlug?: string | null; // SEO-friendly slug
+  educationLevel?: string | null; // Education level name
 }
 
 const formatCurrency = (amount?: number | null, currency?: string | null) => {
@@ -92,6 +93,7 @@ const JobCard = ({
   skillsTop3,
   department,
   jobSlug,
+  educationLevel,
 }: JobCardProps) => {
   const displayLocation = locationType
     ? `${location || ""}${location && locationType ? " • " : ""}${toTitleCase(locationType)}`
@@ -162,7 +164,7 @@ const JobCard = ({
           )}
         </div>
 
-        {/* Tag row: location, type, employment, experience */}
+        {/* Tag row: location, type, employment, experience, education */}
         <div className="flex flex-wrap gap-2 mt-3">
           {displayLocation && (
             <Badge variant="outline" className="flex items-center gap-1">
@@ -175,6 +177,12 @@ const JobCard = ({
           )}
           {experienceDisplay && (
             <Badge variant="outline">{experienceDisplay}</Badge>
+          )}
+          {educationLevel && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              <GraduationCap className="h-3.5 w-3.5" />
+              {educationLevel}
+            </Badge>
           )}
           {department && (
             <Badge variant="outline" className="flex items-center gap-1">

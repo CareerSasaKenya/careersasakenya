@@ -16,6 +16,9 @@ const Jobs = () => {
             id,
             name,
             logo
+          ),
+          education_levels (
+            name
           )
         `)
         .order("created_at", { ascending: false });
@@ -79,7 +82,9 @@ const Jobs = () => {
                   }
                   department={job.job_function}
                   jobSlug={job.job_slug}
+                  educationLevel={(job as any).education_levels?.name}
                 />
+
               </div>
             ))}
           </div>
