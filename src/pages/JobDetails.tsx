@@ -598,15 +598,15 @@ const JobDetails = () => {
                 />
               ))}
             </div>
-            <div className="mt-8 flex justify-center">
-              <Link to="/jobs">
-                <Button variant="outline" size="lg" className="border-2 hover:bg-gradient-primary hover:text-primary-foreground hover:border-transparent transition-all duration-300">
-                  Browse More Opportunities
-                </Button>
-              </Link>
-            </div>
           </div>
         )}
+        <div className="mt-8 flex justify-center">
+          <Link to="/jobs">
+            <Button variant="outline" size="lg" className="border-2 hover:bg-gradient-primary hover:text-primary-foreground hover:border-transparent transition-all duration-300">
+              Browse More Opportunities
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
