@@ -33,7 +33,7 @@ const MobileNav = () => {
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-3/4 max-w-[350px]">
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col min-h-full">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b">
             <div className="p-2 rounded-lg bg-gradient-primary shadow-glow">
               <Briefcase className="h-5 w-5 text-primary-foreground" />
@@ -43,7 +43,7 @@ const MobileNav = () => {
             </span>
           </div>
 
-          <nav className="flex flex-col gap-1 flex-1">
+          <nav className="flex flex-col gap-1">
             <Link to="/jobs" onClick={closeSheet}>
               <Button variant="ghost" className="w-full justify-start text-base">
                 Browse Jobs
