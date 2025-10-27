@@ -18,6 +18,9 @@ interface Job {
   status: string;
   industry: string;
   posted_by: string;
+  education_levels?: {
+    name: string;
+  } | null | any;
 }
 
 interface User {
@@ -47,7 +50,18 @@ const AdminDashboard = () => {
 
   const fetchData = async () => {
     const [jobsResult, usersResult, blogPostsResult] = await Promise.all([
-      supabase.from("jobs").select("id, title, company, location, created_at, employment_type, status, industry, posted_by").order("created_at", { ascending: false }),
+      supabase.from("jobs").select(`
+        id, 
+        title, 
+        company, 
+        location, 
+        created_at, 
+        employment_type, 
+        status, 
+        industry, 
+        posted_by,
+        education_levels (name)
+      `).order("created_at", { ascending: false }),
       supabase.from("user_roles").select("id, user_id, role, created_at").order("created_at", { ascending: false }),
       supabase.from("blog_posts").select("id, title, category, created_at, author_id").order("created_at", { ascending: false }),
     ]);
@@ -154,6 +168,7 @@ const AdminDashboard = () => {
                       <TableHead>Title</TableHead>
                       <TableHead>Company</TableHead>
                       <TableHead>Location</TableHead>
+                      <TableHead>Education</TableHead>
                       <TableHead>Posted</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -168,6 +183,7 @@ const AdminDashboard = () => {
                         </TableCell>
                         <TableCell>{job.company}</TableCell>
                         <TableCell>{job.location}</TableCell>
+                        <TableCell>{job.education_levels?.name || 'Not specified'}</TableCell>
                         <TableCell>{new Date(job.created_at).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">

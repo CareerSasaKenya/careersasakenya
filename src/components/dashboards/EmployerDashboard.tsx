@@ -21,6 +21,9 @@ interface Job {
   status: string;
   applications_count: number;
   views_count: number;
+  education_levels?: {
+    name: string;
+  } | null | any;
 }
 
 const EmployerDashboard = () => {
@@ -37,7 +40,18 @@ const EmployerDashboard = () => {
 
     const { data, error } = await supabase
       .from("jobs")
-      .select("id, title, company, location, created_at, employment_type, status, applications_count, views_count")
+      .select(`
+        id, 
+        title, 
+        company, 
+        location, 
+        created_at, 
+        employment_type, 
+        status, 
+        applications_count, 
+        views_count,
+        education_levels (name)
+      `)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -100,6 +114,7 @@ const EmployerDashboard = () => {
                     <TableRow>
                       <TableHead>Title</TableHead>
                       <TableHead>Type</TableHead>
+                      <TableHead>Education</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Applications</TableHead>
                       <TableHead>Views</TableHead>
@@ -114,6 +129,7 @@ const EmployerDashboard = () => {
                           <Link to={`/jobs/${job.id}`} className="hover:underline">{job.title}</Link>
                         </TableCell>
                         <TableCell><Badge variant="outline">{job.employment_type?.replace(/_/g, ' ')}</Badge></TableCell>
+                        <TableCell>{job.education_levels?.name || 'Not specified'}</TableCell>
                         <TableCell><Badge variant={job.status === 'active' ? 'default' : 'secondary'}>{job.status}</Badge></TableCell>
                         <TableCell>{job.applications_count || 0}</TableCell>
                         <TableCell>{job.views_count || 0}</TableCell>
