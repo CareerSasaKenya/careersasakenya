@@ -30,8 +30,12 @@ const JobDetails = () => {
   const { data: job, isLoading } = useQuery({
     queryKey: ["job", id],
     queryFn: async () => {
-      // First try to fetch by slug (new format)
-      let { data, error } = await supabase
+      if (!id) return null;
+      
+      let data, error;
+      
+      // Try to find by slug first (more user-friendly URLs)
+      ({ data, error } = await supabase
         .from("jobs")
         .select(`
           *,
@@ -39,34 +43,33 @@ const JobDetails = () => {
             id,
             name,
             logo
+          ),
+          education_levels (
+            id,
+            name
           )
         `)
-        .eq("job_slug", id) // Try slug first
-        .maybeSingle();
+        .eq("job_slug", id)
+        .maybeSingle());
       
-      // If not found by slug, try by ID (for backward compatibility)
-      if (!data && id) {
-        // Check if it looks like a UUID
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        if (uuidRegex.test(id)) {
-          ({ data, error } = await supabase
-            .from("jobs")
-            .select(`
-              *,
-              companies (
-                id,
-                name,
-                logo
-              )
-            `)
-            .eq("id", id)
-            .maybeSingle());
-          
-          // If found by ID, redirect to the slug version (301 redirect)
-          if (data && data.job_slug) {
-            navigate(`/jobs/${data.job_slug}`, { replace: true });
-          }
-        }
+      // If not found by slug, try by ID
+      if (!data && !error) {
+        ({ data, error } = await supabase
+          .from("jobs")
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo
+            ),
+            education_levels (
+              id,
+              name
+            )
+          `)
+          .eq("id", id)
+          .maybeSingle());
       }
       
       if (error) throw error;
@@ -645,12 +648,12 @@ const RoleDetails = ({ job }: { job: Job }) => {
           </div>
         )}
 
-        {job.education_requirements && (
+        {job.education_levels?.name && (
           <div className="flex items-start gap-3">
             <GraduationCap className="h-5 w-5 text-primary mt-0.5" />
             <div>
               <p className="text-sm text-muted-foreground">Education</p>
-              <p className="font-medium">{job.education_requirements}</p>
+              <p className="font-medium">{job.education_levels.name}</p>
             </div>
           </div>
         )}

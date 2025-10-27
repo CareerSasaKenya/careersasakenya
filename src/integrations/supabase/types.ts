@@ -144,6 +144,7 @@ export type Database = {
           description: string
           direct_apply: boolean | null
           education_requirements: string | null
+          education_level_id: number | null
           employment_type: Database["public"]["Enums"]["employment_type"] | null
           experience_level:
             | Database["public"]["Enums"]["experience_level"]
@@ -204,6 +205,7 @@ export type Database = {
           description: string
           direct_apply?: boolean | null
           education_requirements?: string | null
+          education_level_id?: number | null
           employment_type?:
             | Database["public"]["Enums"]["employment_type"]
             | null
@@ -266,6 +268,7 @@ export type Database = {
           description?: string
           direct_apply?: boolean | null
           education_requirements?: string | null
+          education_level_id?: number | null
           employment_type?:
             | Database["public"]["Enums"]["employment_type"]
             | null

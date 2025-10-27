@@ -46,7 +46,7 @@ const PostJob = () => {
     industry: "",
     required_qualifications: "",
     preferred_qualifications: "",
-    education_requirements: "",
+    education_level_id: "", // Changed from education_requirements to education_level_id
     experience_level: "Mid",
     language_requirements: "",
     // Compensation & Schedule
@@ -75,6 +75,18 @@ const PostJob = () => {
         .from("industries")
         .select("id, name")
         .order("name");
+      if (error) throw error;
+      return (data as { id: number; name: string }[]) || [];
+    },
+  });
+
+  const { data: educationLevels } = useQuery({
+    queryKey: ["education_levels"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("education_levels")
+        .select("id, name")
+        .order("id");
       if (error) throw error;
       return (data as { id: number; name: string }[]) || [];
     },
@@ -212,7 +224,7 @@ const PostJob = () => {
         industry: existingJob.industry || "",
         required_qualifications: existingJob.required_qualifications?.toString() || "",
         preferred_qualifications: existingJob.preferred_qualifications?.toString() || "",
-        education_requirements: existingJob.education_requirements || "",
+        education_level_id: (existingJob as any).education_level_id ? String((existingJob as any).education_level_id) : "", // Updated field name
         experience_level: existingJob.experience_level || "Mid",
         language_requirements: existingJob.language_requirements || "",
         
@@ -295,7 +307,7 @@ const PostJob = () => {
         industry: data.industry || null,
         required_qualifications: data.required_qualifications || null,
         preferred_qualifications: data.preferred_qualifications || null,
-        education_requirements: data.education_requirements || null,
+        education_level_id: data.education_level_id ? parseInt(data.education_level_id) : null, // Updated field name
         experience_level: data.experience_level || null,
         language_requirements: data.language_requirements || null,
 
@@ -707,14 +719,21 @@ const PostJob = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="education_requirements">Education Requirements</Label>
-                      <Input
-                        id="education_requirements"
-                        name="education_requirements"
-                        value={formData.education_requirements}
-                        onChange={handleChange}
-                        placeholder="e.g., Bachelor's in Civil Engineering"
-                      />
+                      <Label htmlFor="education_level_id">Education Level</Label>
+                      <Select 
+                        value={formData.education_level_id} 
+                        onValueChange={(value) => setFormData({...formData, education_level_id: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select minimum education level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">No specific requirement</SelectItem>
+                          {educationLevels?.map(level => (
+                            <SelectItem key={level.id} value={String(level.id)}>{level.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
