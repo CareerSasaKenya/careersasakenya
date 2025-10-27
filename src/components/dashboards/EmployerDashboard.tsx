@@ -79,10 +79,10 @@ const EmployerDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-bold">Employer Dashboard</h1>
         <Link to="/post-job">
-          <Button className="bg-gradient-primary hover:opacity-90">
+          <Button className="bg-gradient-primary hover:opacity-90 w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Post New Job
           </Button>
@@ -109,38 +109,40 @@ const EmployerDashboard = () => {
               ) : jobs.length === 0 ? (
                 <p className="text-muted-foreground">No jobs posted yet. Create your first job posting!</p>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Education</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Applications</TableHead>
-                      <TableHead>Views</TableHead>
-                      <TableHead>Posted</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {jobs.map((job) => (
-                      <TableRow key={job.id}>
-                        <TableCell className="font-medium">
-                          <Link to={`/jobs/${job.id}`} className="hover:underline">{job.title}</Link>
-                        </TableCell>
-                        <TableCell><Badge variant="outline">{job.employment_type?.replace(/_/g, ' ')}</Badge></TableCell>
-                        <TableCell>{job.education_levels?.name || 'Not specified'}</TableCell>
-                        <TableCell><Badge variant={job.status === 'active' ? 'default' : 'secondary'}>{job.status}</Badge></TableCell>
-                        <TableCell>{job.applications_count || 0}</TableCell>
-                        <TableCell>{job.views_count || 0}</TableCell>
-                        <TableCell>{new Date(job.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(job.id)}>Delete</Button>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Education</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Applications</TableHead>
+                        <TableHead>Views</TableHead>
+                        <TableHead>Posted</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {jobs.map((job) => (
+                        <TableRow key={job.id}>
+                          <TableCell className="font-medium">
+                            <Link to={`/jobs/${job.id}`} className="hover:underline">{job.title}</Link>
+                          </TableCell>
+                          <TableCell><Badge variant="outline">{job.employment_type?.replace(/_/g, ' ')}</Badge></TableCell>
+                          <TableCell>{job.education_levels?.name || 'Not specified'}</TableCell>
+                          <TableCell><Badge variant={job.status === 'active' ? 'default' : 'secondary'}>{job.status}</Badge></TableCell>
+                          <TableCell>{job.applications_count || 0}</TableCell>
+                          <TableCell>{job.views_count || 0}</TableCell>
+                          <TableCell>{new Date(job.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(job.id)}>Delete</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>

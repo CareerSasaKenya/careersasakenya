@@ -123,17 +123,17 @@ const AdminDashboard = () => {
   };
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Link to="/blog/create">
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               <FileText className="mr-2 h-4 w-4" />
               New Blog Post
             </Button>
           </Link>
           <Link to="/post-job">
-            <Button className="bg-gradient-primary hover:opacity-90">
+            <Button className="bg-gradient-primary hover:opacity-90 w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               Post New Job
             </Button>
@@ -162,45 +162,103 @@ const AdminDashboard = () => {
               ) : jobs.length === 0 ? (
                 <p className="text-muted-foreground">No jobs available.</p>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Company</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Education</TableHead>
-                      <TableHead>Posted</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {jobs.map((job) => (
-                      <TableRow key={job.id}>
-                        <TableCell className="font-medium">
-                          <Link to={`/jobs/${job.id}`} className="hover:underline">
-                            {job.title}
-                          </Link>
-                        </TableCell>
-                        <TableCell>{job.company}</TableCell>
-                        <TableCell>{job.location}</TableCell>
-                        <TableCell>{job.education_levels?.name || 'Not specified'}</TableCell>
-                        <TableCell>{new Date(job.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Link to={`/post-job/${job.id}`}>
-                              <Button variant="ghost" size="icon">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Button variant="ghost" size="icon" onClick={() => handleDeleteJob(job.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Company</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Education</TableHead>
+                        <TableHead>Posted</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {jobs.map((job) => (
+                        <TableRow key={job.id}>
+                          <TableCell className="font-medium">
+                            <Link to={`/jobs/${job.id}`} className="hover:underline">
+                              {job.title}
+                            </Link>
+                          </TableCell>
+                          <TableCell>{job.company}</TableCell>
+                          <TableCell>{job.location}</TableCell>
+                          <TableCell>{job.education_levels?.name || 'Not specified'}</TableCell>
+                          <TableCell>{new Date(job.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Link to={`/post-job/${job.id}`}>
+                                <Button variant="ghost" size="icon">
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                              <Button variant="ghost" size="icon" onClick={() => handleDeleteJob(job.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="blog">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Blog Posts
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <p className="text-muted-foreground">Loading...</p>
+              ) : blogPosts.length === 0 ? (
+                <p className="text-muted-foreground">No blog posts available.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Posted</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {blogPosts.map((post) => (
+                        <TableRow key={post.id}>
+                          <TableCell className="font-medium">
+                            <Link to={`/blog/${generateSlug(post.title)}-${post.id}`} className="hover:underline">
+                              {post.title}
+                            </Link>
+                          </TableCell>
+                          <TableCell>{post.category || 'Uncategorized'}</TableCell>
+                          <TableCell>{new Date(post.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Link to={`/blog/edit/${post.id}`}>
+                                <Button variant="ghost" size="icon">
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                              <Button variant="ghost" size="icon" onClick={() => handleDeleteBlogPost(post.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -218,89 +276,32 @@ const AdminDashboard = () => {
               {loading ? (
                 <p className="text-muted-foreground">Loading...</p>
               ) : users.length === 0 ? (
-                <p className="text-muted-foreground">No users found.</p>
+                <p className="text-muted-foreground">No users available.</p>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User ID</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Joined</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-mono text-xs">{user.user_id.slice(0, 8)}...</TableCell>
-                        <TableCell>
-                          <span className="capitalize px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
-                            {user.role}
-                          </span>
-                        </TableCell>
-                        <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User ID</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Joined</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="blog">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                All Blog Posts
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <p className="text-muted-foreground">Loading...</p>
-              ) : blogPosts.length === 0 ? (
-                <p className="text-muted-foreground">No blog posts available.</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Posted</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {blogPosts.map((post) => (
-                      <TableRow key={post.id}>
-                        <TableCell className="font-medium">
-                          <Link to={`/blog/${generateSlug(post.title)}`} className="hover:underline">
-                            {post.title}
-                          </Link>
-                        </TableCell>
-                        <TableCell>{post.category || "Uncategorized"}</TableCell>
-                        <TableCell>{new Date(post.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Link to={`/blog/${generateSlug(post.title)}`}>
-                              <Button variant="ghost" size="icon">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Link to={`/blog/edit/${post.id}`}>
-                              <Button variant="ghost" size="icon">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Button variant="ghost" size="icon" onClick={() => handleDeleteBlogPost(post.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-mono text-sm">{user.user_id}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                              {user.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
