@@ -425,11 +425,11 @@ const PostJob = () => {
               )}
 
               <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
-                  <TabsTrigger value="basic">Basic</TabsTrigger>
-                  <TabsTrigger value="details">Further Details</TabsTrigger>
-                  <TabsTrigger value="requirements">Requirements</TabsTrigger>
-                  <TabsTrigger value="application">Application</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2 p-1 bg-muted rounded-lg mb-6">
+                  <TabsTrigger value="basic" className="w-full">Basic</TabsTrigger>
+                  <TabsTrigger value="details" className="w-full">Further Details</TabsTrigger>
+                  <TabsTrigger value="requirements" className="w-full">Requirements</TabsTrigger>
+                  <TabsTrigger value="application" className="w-full">Application</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="basic" className="space-y-4 mt-4">
