@@ -46,7 +46,7 @@ const PostJob = () => {
     industry: "",
     required_qualifications: "",
     preferred_qualifications: "",
-    education_level_id: "", // Changed from education_requirements to education_level_id
+    education_level_id: "none", // Changed from empty string to "none"
     experience_level: "Mid",
     language_requirements: "",
     // Compensation & Schedule
@@ -224,7 +224,7 @@ const PostJob = () => {
         industry: existingJob.industry || "",
         required_qualifications: existingJob.required_qualifications?.toString() || "",
         preferred_qualifications: existingJob.preferred_qualifications?.toString() || "",
-        education_level_id: (existingJob as any).education_level_id ? String((existingJob as any).education_level_id) : "", // Updated field name
+        education_level_id: (existingJob as any).education_level_id ? String((existingJob as any).education_level_id) : "none", // Updated to use "none" instead of empty string
         experience_level: existingJob.experience_level || "Mid",
         language_requirements: existingJob.language_requirements || "",
         
@@ -307,7 +307,7 @@ const PostJob = () => {
         industry: data.industry || null,
         required_qualifications: data.required_qualifications || null,
         preferred_qualifications: data.preferred_qualifications || null,
-        education_level_id: data.education_level_id ? parseInt(data.education_level_id) : null, // Updated field name
+        education_level_id: data.education_level_id && data.education_level_id !== "none" ? parseInt(data.education_level_id) : null, // Updated to handle "none" value
         experience_level: data.experience_level || null,
         language_requirements: data.language_requirements || null,
 
@@ -728,7 +728,7 @@ const PostJob = () => {
                           <SelectValue placeholder="Select minimum education level" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">No specific requirement</SelectItem>
+                          <SelectItem value="none">No specific requirement</SelectItem>
                           {educationLevels?.map(level => (
                             <SelectItem key={level.id} value={String(level.id)}>{level.name}</SelectItem>
                           ))}
