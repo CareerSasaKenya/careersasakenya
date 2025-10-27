@@ -425,7 +425,7 @@ const PostJob = () => {
               )}
 
               <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
                   <TabsTrigger value="basic">Basic</TabsTrigger>
                   <TabsTrigger value="details">Further Details</TabsTrigger>
                   <TabsTrigger value="requirements">Requirements</TabsTrigger>
