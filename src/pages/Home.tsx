@@ -15,7 +15,7 @@ const Home = () => {
         <div className="container mx-auto text-center relative z-10 max-w-5xl">
           <div className="animate-fade-in">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 bg-gradient-primary bg-clip-text text-transparent leading-tight px-4">
-              Find Your Dream Job<br className="hidden sm:block" />in Kenya
+              Find Your Dream Job<br className="hidden sm:block" /> in Kenya
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-3xl mx-auto px-4">
               Connect with top employers and discover exciting career opportunities across the country
