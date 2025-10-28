@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import JobCard from "@/components/JobCard";
-import { Loader2, ChevronLeft, ChevronRight, Search, RotateCcw } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Search, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Database } from "@/integrations/supabase/types";
 
@@ -152,6 +152,16 @@ const Jobs = () => {
     sortBy: "newest"
   });
   
+  // State to track dropdown open states
+  const [dropdownStates, setDropdownStates] = useState({
+    jobType: false,
+    industry: false,
+    location: false
+  });
+  
+  // State for advanced search visibility on mobile
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
 
@@ -185,7 +195,7 @@ const Jobs = () => {
       }
 
       if (filters.educationLevel) {
-        countQuery = countQuery.eq("education_levels.name", filters.educationLevel);
+        countQuery = countQuery.eq("education_level", filters.educationLevel);
       }
 
       if (filters.industry) {
@@ -209,9 +219,6 @@ const Jobs = () => {
             id,
             name,
             logo
-          ),
-          education_levels (
-            name
           )
         `)
         .range((currentPage - 1) * JOBS_PER_PAGE, currentPage * JOBS_PER_PAGE - 1);
@@ -238,7 +245,7 @@ const Jobs = () => {
       }
 
       if (filters.educationLevel) {
-        query = query.eq("education_levels.name", filters.educationLevel);
+        query = query.eq("education_level", filters.educationLevel);
       }
 
       if (filters.industry) {
@@ -313,6 +320,86 @@ const Jobs = () => {
     });
   };
 
+  // Handle dropdown focus/blur events
+  const handleDropdownFocus = (field: keyof typeof dropdownStates) => {
+    setDropdownStates(prev => ({ ...prev, [field]: true }));
+  };
+
+  const handleDropdownBlur = (field: keyof typeof dropdownStates) => {
+    // Small delay to allow for selection before closing
+    setTimeout(() => {
+      setDropdownStates(prev => ({ ...prev, [field]: false }));
+    }, 150);
+  };
+
+  // Generate pagination buttons with ellipsis
+  const generatePaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 10;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total pages is less than or equal to max visible
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(
+          <button
+            key={i}
+            onClick={() => handlePageChange(i)}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === i
+                ? "bg-primary text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {i}
+          </button>
+        );
+      }
+    } else {
+      // Show first 10 pages and last page with ellipsis
+      for (let i = 1; i <= Math.min(maxVisiblePages, totalPages); i++) {
+        buttons.push(
+          <button
+            key={i}
+            onClick={() => handlePageChange(i)}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === i
+                ? "bg-primary text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {i}
+          </button>
+        );
+      }
+      
+      // Add ellipsis if there are more pages beyond the visible range
+      if (totalPages > maxVisiblePages) {
+        buttons.push(
+          <span key="ellipsis" className="px-2 py-1 text-gray-500">
+            ...
+          </span>
+        );
+        
+        // Add last page button
+        buttons.push(
+          <button
+            key={totalPages}
+            onClick={() => handlePageChange(totalPages)}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === totalPages
+                ? "bg-primary text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {totalPages}
+          </button>
+        );
+      }
+    }
+    
+    return buttons;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -330,9 +417,10 @@ const Jobs = () => {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main Content Area */}
           <div className="flex-grow">
-            {/* Search Boxes */}
+            {/* Search Boxes - Responsive for Mobile */}
             <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              {/* Basic Search - Always visible */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 {/* Keyword Search */}
                 <div className="relative">
                   <input
@@ -345,11 +433,13 @@ const Jobs = () => {
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
                 
-                {/* Function Search with Dropdown - Truly Compact */}
+                {/* Function Search with Dropdown - Truly Compact with Dynamic Arrow */}
                 <div className="relative">
                   <select
                     value={filters.jobType}
                     onChange={(e) => setFilters({...filters, jobType: e.target.value})}
+                    onFocus={() => handleDropdownFocus('jobType')}
+                    onBlur={() => handleDropdownBlur('jobType')}
                     className="w-full p-2 pl-6 pr-4 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary appearance-none truncate"
                   >
                     <option value="">Any Function</option>
@@ -361,17 +451,25 @@ const Jobs = () => {
                   </select>
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                   <div className="absolute right-1 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
+                    {dropdownStates.jobType ? (
+                      <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
+                      </svg>
+                    ) : (
+                      <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    )}
                   </div>
                 </div>
                 
-                {/* Industry Search with Dropdown - Truly Compact */}
+                {/* Industry Search with Dropdown - Truly Compact with Dynamic Arrow */}
                 <div className="relative">
                   <select
                     value={filters.industry}
                     onChange={(e) => setFilters({...filters, industry: e.target.value})}
+                    onFocus={() => handleDropdownFocus('industry')}
+                    onBlur={() => handleDropdownBlur('industry')}
                     className="w-full p-2 pl-6 pr-4 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary appearance-none truncate"
                   >
                     <option value="">Any Industry</option>
@@ -383,31 +481,15 @@ const Jobs = () => {
                   </select>
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                   <div className="absolute right-1 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-                
-                {/* Location Search with Counties Dropdown - Truly Compact */}
-                <div className="relative">
-                  <select
-                    value={filters.location}
-                    onChange={(e) => setFilters({...filters, location: e.target.value})}
-                    className="w-full p-2 pl-6 pr-4 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary appearance-none truncate"
-                  >
-                    <option value="">Any Location</option>
-                    {COUNTIES.map((county, index) => (
-                      <option key={index} value={county.name}>
-                        {county.name}
-                      </option>
-                    ))}
-                  </select>
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
-                  <div className="absolute right-1 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
+                    {dropdownStates.industry ? (
+                      <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
+                      </svg>
+                    ) : (
+                      <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    )}
                   </div>
                 </div>
                 
@@ -420,6 +502,131 @@ const Jobs = () => {
                     <Search className="h-4 w-4" />
                     <span>Search</span>
                   </button>
+                </div>
+              </div>
+              
+              {/* Advanced Search Toggle for Mobile */}
+              <div className="md:hidden mt-3">
+                <button
+                  onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+                  className="flex items-center justify-center w-full py-2 text-sm text-primary font-medium bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+                >
+                  {showAdvancedSearch ? (
+                    <>
+                      <ChevronUp className="h-4 w-4 mr-1" />
+                      Hide Advanced Search
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-4 w-4 mr-1" />
+                      Advanced Search
+                    </>
+                  )}
+                </button>
+              </div>
+              
+              {/* Advanced Search Options - Hidden by default on mobile, always visible on desktop */}
+              <div className={`mt-3 ${showAdvancedSearch ? 'block' : 'hidden md:block'}`}>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                  {/* Location Search with Counties Dropdown - Truly Compact with Dynamic Arrow */}
+                  <div className="relative">
+                    <select
+                      value={filters.location}
+                      onChange={(e) => setFilters({...filters, location: e.target.value})}
+                      onFocus={() => handleDropdownFocus('location')}
+                      onBlur={() => handleDropdownBlur('location')}
+                      className="w-full p-2 pl-6 pr-4 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary appearance-none truncate"
+                    >
+                      <option value="">Any Location</option>
+                      {COUNTIES.map((county, index) => (
+                        <option key={index} value={county.name}>
+                          {county.name}
+                        </option>
+                      ))}
+                    </select>
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+                    <div className="absolute right-1 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      {dropdownStates.location ? (
+                        <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path>
+                        </svg>
+                      ) : (
+                        <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Employment Type */}
+                  <div className="relative">
+                    <select
+                      value={filters.employmentType}
+                      onChange={(e) => setFilters({...filters, employmentType: e.target.value})}
+                      className="w-full p-2 pl-6 pr-4 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary appearance-none truncate"
+                    >
+                      <option value="">Any Type</option>
+                      <option value="FULL_TIME">Full Time</option>
+                      <option value="PART_TIME">Part Time</option>
+                      <option value="CONTRACTOR">Contractor</option>
+                      <option value="INTERN">Intern</option>
+                      <option value="TEMPORARY">Temporary</option>
+                      <option value="VOLUNTEER">Volunteer</option>
+                      <option value="PER_DIEM">Per Diem</option>
+                    </select>
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+                  </div>
+                  
+                  {/* Experience Level */}
+                  <div className="relative">
+                    <select
+                      value={filters.experienceLevel}
+                      onChange={(e) => setFilters({...filters, experienceLevel: e.target.value})}
+                      className="w-full p-2 pl-6 pr-4 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary appearance-none truncate"
+                    >
+                      <option value="">Any Level</option>
+                      <option value="Entry">Entry Level</option>
+                      <option value="Mid">Mid Level</option>
+                      <option value="Senior">Senior Level</option>
+                      <option value="Managerial">Managerial</option>
+                      <option value="Internship">Internship</option>
+                    </select>
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+                  </div>
+                  
+                  {/* Education Level */}
+                  <div className="relative">
+                    <select
+                      value={filters.educationLevel}
+                      onChange={(e) => setFilters({...filters, educationLevel: e.target.value})}
+                      className="w-full p-2 pl-6 pr-4 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary appearance-none truncate"
+                    >
+                      <option value="">Any Education</option>
+                      <option value="High School">High School</option>
+                      <option value="Certificate">Certificate</option>
+                      <option value="Diploma">Diploma</option>
+                      <option value="Advanced Diploma">Advanced Diploma</option>
+                      <option value="Bachelor's Degree">Bachelor's Degree</option>
+                      <option value="Master's Degree">Master's Degree</option>
+                      <option value="Doctorate (PhD)">Doctorate (PhD)</option>
+                      <option value="Post-Doctorate">Post-Doctorate</option>
+                      <option value="Professional Qualification">Professional Qualification</option>
+                    </select>
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+                  </div>
+                  
+                  {/* Remote Only */}
+                  <div className="flex items-center justify-center">
+                    <label className="flex items-center text-xs">
+                      <input
+                        type="checkbox"
+                        checked={filters.remoteOnly}
+                        onChange={(e) => setFilters({...filters, remoteOnly: e.target.checked})}
+                        className="h-3 w-3 text-primary focus:ring-primary border-gray-300 rounded mr-1"
+                      />
+                      Remote Only
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -467,40 +674,40 @@ const Jobs = () => {
                           }
                           department={job.job_function}
                           jobSlug={job.job_slug}
-                          educationLevel={(job as any).education_levels?.name}
+                          educationLevel={job.education_level}
                         />
                       </div>
                     ))}
                   </div>
                   
-                  {/* Pagination */}
+                  {/* Enhanced Pagination */}
                   {totalPages > 1 && (
-                    <div className="flex justify-center items-center mt-8 space-x-2">
-                      <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
+                    <div className="flex flex-col items-center mt-8 space-y-4">
+                      <div className="flex items-center space-x-1">
+                        <button
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        
+                        {generatePaginationButtons()}
+                        
+                        <button
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </div>
                       
-                      <span className="text-sm text-gray-600">
-                        Page {currentPage} of {totalPages}
-                      </span>
-                      
-                      <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
+                      <div className="text-sm text-gray-500">
+                        Page {currentPage} of {totalPages} ({totalJobs} total jobs)
+                      </div>
                     </div>
                   )}
-                  
-                  <div className="text-center mt-4 text-sm text-gray-500">
-                    Showing {Math.min((currentPage - 1) * JOBS_PER_PAGE + 1, totalJobs)} - {Math.min(currentPage * JOBS_PER_PAGE, totalJobs)} of {totalJobs} jobs
-                  </div>
                 </>
               ) : (
                 <div className="text-center py-32 animate-fade-in">
@@ -514,28 +721,28 @@ const Jobs = () => {
             </div>
           </div>
           
-          {/* Sidebar Filters - With Reset Button at Bottom */}
-          <div className="w-full lg:w-72 flex-shrink-0 order-first lg:order-last">
-            <div className="bg-white rounded-lg shadow-sm border p-3 sticky top-6 h-[calc(100vh-2rem)] overflow-y-auto">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-md font-semibold">Filters</h3>
+          {/* Sidebar Filters - Expanded by 2cm (about 80px) */}
+          <div className="w-full lg:w-80 flex-shrink-0 order-first lg:order-last">
+            <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-6 h-[calc(100vh-2rem)] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Filters</h3>
                 <button 
                   onClick={resetFilters}
-                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
                 >
-                  <RotateCcw className="h-3 w-3" />
+                  <RotateCcw className="h-4 w-4" />
                   Reset
                 </button>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {/* Sort By */}
                 <div>
-                  <label className="text-xs font-medium mb-1 block">Sort By</label>
+                  <label className="text-sm font-medium mb-2 block">Sort By</label>
                   <select 
                     value={filters.sortBy}
                     onChange={(e) => setFilters({...filters, sortBy: e.target.value})}
-                    className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
@@ -546,11 +753,11 @@ const Jobs = () => {
                 
                 {/* Employment Type */}
                 <div>
-                  <label className="text-xs font-medium mb-1 block">Employment Type</label>
+                  <label className="text-sm font-medium mb-2 block">Employment Type</label>
                   <select 
                     value={filters.employmentType}
                     onChange={(e) => setFilters({...filters, employmentType: e.target.value})}
-                    className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                   >
                     <option value="">All Types</option>
                     <option value="FULL_TIME">Full Time</option>
@@ -565,11 +772,11 @@ const Jobs = () => {
                 
                 {/* Experience Level */}
                 <div>
-                  <label className="text-xs font-medium mb-1 block">Experience Level</label>
+                  <label className="text-sm font-medium mb-2 block">Experience Level</label>
                   <select 
                     value={filters.experienceLevel}
                     onChange={(e) => setFilters({...filters, experienceLevel: e.target.value})}
-                    className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                   >
                     <option value="">All Levels</option>
                     <option value="Entry">Entry Level</option>
@@ -582,23 +789,32 @@ const Jobs = () => {
                 
                 {/* Education Level */}
                 <div>
-                  <label className="text-xs font-medium mb-1 block">Education Level</label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Bachelor's, Master's"
+                  <label className="text-sm font-medium mb-2 block">Education Level</label>
+                  <select
                     value={filters.educationLevel}
                     onChange={(e) => setFilters({...filters, educationLevel: e.target.value})}
-                    className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
-                  />
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                  >
+                    <option value="">Any Education Level</option>
+                    <option value="High School">High School</option>
+                    <option value="Certificate">Certificate</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Advanced Diploma">Advanced Diploma</option>
+                    <option value="Bachelor's Degree">Bachelor's Degree</option>
+                    <option value="Master's Degree">Master's Degree</option>
+                    <option value="Doctorate (PhD)">Doctorate (PhD)</option>
+                    <option value="Post-Doctorate">Post-Doctorate</option>
+                    <option value="Professional Qualification">Professional Qualification</option>
+                  </select>
                 </div>
                 
                 {/* Industry */}
                 <div>
-                  <label className="text-xs font-medium mb-1 block">Industry</label>
+                  <label className="text-sm font-medium mb-2 block">Industry</label>
                   <select
                     value={filters.industry}
                     onChange={(e) => setFilters({...filters, industry: e.target.value})}
-                    className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                   >
                     <option value="">Any Industry</option>
                     {INDUSTRIES.map((ind, index) => (
@@ -611,11 +827,11 @@ const Jobs = () => {
                 
                 {/* Location */}
                 <div>
-                  <label className="text-xs font-medium mb-1 block">Location</label>
+                  <label className="text-sm font-medium mb-2 block">Location</label>
                   <select
                     value={filters.location}
                     onChange={(e) => setFilters({...filters, location: e.target.value})}
-                    className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                   >
                     <option value="">Any Location</option>
                     {COUNTIES.map((county, index) => (
@@ -633,41 +849,41 @@ const Jobs = () => {
                     id="remote-only"
                     checked={filters.remoteOnly}
                     onChange={(e) => setFilters({...filters, remoteOnly: e.target.checked})}
-                    className="h-3 w-3 text-primary focus:ring-primary border-gray-300 rounded"
+                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
                   />
-                  <label htmlFor="remote-only" className="text-xs">Remote Only</label>
+                  <label htmlFor="remote-only" className="text-sm">Remote Only</label>
                 </div>
                 
                 {/* Salary Range */}
                 <div>
-                  <label className="text-xs font-medium mb-1 block">Salary Range (KES)</label>
-                  <div className="flex items-center space-x-1">
+                  <label className="text-sm font-medium mb-2 block">Salary Range (KES)</label>
+                  <div className="flex items-center space-x-2">
                     <input
                       type="number"
                       placeholder="Min"
                       value={filters.salaryMin || ''}
                       onChange={(e) => setFilters({...filters, salaryMin: e.target.value ? parseInt(e.target.value) : null})}
-                      className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                     />
-                    <span className="text-xs">-</span>
+                    <span className="text-sm">-</span>
                     <input
                       type="number"
                       placeholder="Max"
                       value={filters.salaryMax || ''}
                       onChange={(e) => setFilters({...filters, salaryMax: e.target.value ? parseInt(e.target.value) : null})}
-                      className="w-full p-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                     />
                   </div>
                 </div>
               </div>
               
               {/* Reset Filter Button at Bottom */}
-              <div className="mt-4 pt-3 border-t border-gray-200">
+              <div className="mt-6 pt-4 border-t border-gray-200">
                 <button
                   onClick={resetFilters}
-                  className="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-2 px-4 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                 >
-                  <RotateCcw className="h-3 w-3" />
+                  <RotateCcw className="h-4 w-4" />
                   Reset All Filters
                 </button>
               </div>
