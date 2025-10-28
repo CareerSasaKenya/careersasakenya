@@ -195,7 +195,7 @@ const Jobs = () => {
       }
 
       if (filters.educationLevel) {
-        countQuery = countQuery.eq("education_level", filters.educationLevel);
+        countQuery = countQuery.ilike("education_level", `%${filters.educationLevel}%`);
       }
 
       if (filters.industry) {
@@ -245,7 +245,7 @@ const Jobs = () => {
       }
 
       if (filters.educationLevel) {
-        query = query.eq("education_level", filters.educationLevel);
+        query = query.ilike("education_level", `%${filters.educationLevel}%`);
       }
 
       if (filters.industry) {
@@ -674,7 +674,7 @@ const Jobs = () => {
                           }
                           department={job.job_function}
                           jobSlug={job.job_slug}
-                          educationLevel={job.education_level}
+                          educationLevel={job.education_level_id ? job.education_level_id.toString() : ""}
                         />
                       </div>
                     ))}
@@ -721,8 +721,8 @@ const Jobs = () => {
             </div>
           </div>
           
-          {/* Sidebar Filters - Expanded by 2cm (about 80px) */}
-          <div className="w-full lg:w-80 flex-shrink-0 order-first lg:order-last">
+          {/* Sidebar Filters - Only visible on desktop (lg and larger) */}
+          <div className="hidden lg:block w-full lg:w-80 flex-shrink-0 order-first lg:order-last">
             <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-6 h-[calc(100vh-2rem)] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Filters</h3>
