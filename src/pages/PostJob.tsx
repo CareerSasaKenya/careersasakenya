@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { Loader2, Info } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RichTextEditor from "@/components/RichTextEditor";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const PostJob = () => {
   const { id: jobId } = useParams(); // Get job ID from URL params for editing
@@ -24,6 +25,7 @@ const PostJob = () => {
   const queryClient = useQueryClient();
   const { user, loading } = useAuth();
   const { role } = useUserRole();
+  const isMobile = useIsMobile();
 
   const [formData, setFormData] = useState({
     // Core fields
@@ -411,6 +413,14 @@ const PostJob = () => {
             <CardDescription className="text-sm md:text-base">
               {isEditing ? "Update the job details below" : "Fill in the details below to post a job opening"}
             </CardDescription>
+            {isMobile && (
+              <Alert className="mt-2">
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  Tip: When pasting formatted content (bold, headings, etc.), try pasting it first in a text editor like Notes, then copy and paste it here to preserve formatting.
+                </AlertDescription>
+              </Alert>
+            )}
           </CardHeader>
           
           <CardContent className="px-4 md:px-6">
