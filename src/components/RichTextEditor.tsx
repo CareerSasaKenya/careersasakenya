@@ -40,6 +40,10 @@ const RichTextEditor = ({
       ["link", "image"],
       ["clean"],
     ],
+    clipboard: {
+      // Preserve formatting on paste
+      matchVisual: false,
+    },
   };
 
   const formats = [
