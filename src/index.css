@@ -39,9 +39,9 @@ All colors MUST be HSL.
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 32 90% 54%; /* Orange border */
-    --input: 32 90% 54%;
-    --ring: 32 90% 54%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262 83% 58%;
 
     --radius: 0.75rem;
 
@@ -95,9 +95,9 @@ All colors MUST be HSL.
     --destructive: 0 63% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 32 90% 54%; /* Orange border */
-    --input: 32 90% 54%;
-    --ring: 32 90% 54%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 262 83% 65%;
     
     /* Dark Mode Gradients with new colors */
     --gradient-primary: linear-gradient(135deg, hsl(211 100% 25%), hsl(199 89% 55%));
