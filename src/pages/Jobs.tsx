@@ -219,6 +219,10 @@ const Jobs = () => {
             id,
             name,
             logo
+          ),
+          education_levels (
+            id,
+            name
           )
         `)
         .range((currentPage - 1) * JOBS_PER_PAGE, currentPage * JOBS_PER_PAGE - 1);
@@ -683,7 +687,7 @@ const Jobs = () => {
                           }
                           department={job.job_function}
                           jobSlug={job.job_slug}
-                          educationLevel={job.education_level_id ? job.education_level_id.toString() : ""}
+                          educationLevel={job.education_levels?.name || ""}
                         />
                       </div>
                     ))}

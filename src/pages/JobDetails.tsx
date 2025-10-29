@@ -89,6 +89,10 @@ const JobDetails = () => {
             id,
             name,
             logo
+          ),
+          education_levels (
+            id,
+            name
           )
         `)
         .neq("id", job!.id)
@@ -595,6 +599,7 @@ const JobDetails = () => {
                   }
                   department={relatedJob.job_function}
                   jobSlug={relatedJob.job_slug}
+                  educationLevel={relatedJob.education_levels?.name || ""}
                 />
               ))}
             </div>
