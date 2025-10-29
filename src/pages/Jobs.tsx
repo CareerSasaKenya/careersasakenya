@@ -195,7 +195,7 @@ const Jobs = () => {
       }
 
       if (filters.educationLevel) {
-        countQuery = countQuery.ilike("education_level", `%${filters.educationLevel}%`);
+        countQuery = countQuery.ilike("education_requirements", `%${filters.educationLevel}%`);
       }
 
       if (filters.industry) {
@@ -245,7 +245,7 @@ const Jobs = () => {
       }
 
       if (filters.educationLevel) {
-        query = query.ilike("education_level", `%${filters.educationLevel}%`);
+        query = query.ilike("education_requirements", `%${filters.educationLevel}%`);
       }
 
       if (filters.industry) {
@@ -254,6 +254,15 @@ const Jobs = () => {
 
       if (filters.jobType) {
         query = query.eq("job_function", filters.jobType);
+      }
+
+      // Apply salary filters
+      if (filters.salaryMin !== null) {
+        query = query.gte("salary_min", filters.salaryMin);
+      }
+
+      if (filters.salaryMax !== null) {
+        query = query.lte("salary_max", filters.salaryMax);
       }
 
       // Apply sorting
