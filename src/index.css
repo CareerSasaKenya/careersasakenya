@@ -17,14 +17,13 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Updated colors */
-    --primary: 211 100% 18%;
+    --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 211 100% 28%;
+    --primary-glow: 262 83% 68%;
 
-    --secondary: 32 90% 54%;
+    --secondary: 340 82% 52%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 32 90% 64%;
+    --secondary-glow: 340 82% 62%;
 
     --muted: 220 13% 95%;
     --muted-foreground: 220 9% 46%;
@@ -45,21 +44,21 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Updated gradients with new colors */
-    --gradient-primary: linear-gradient(135deg, hsl(211 100% 18%), hsl(199 89% 48%));
-    --gradient-secondary: linear-gradient(135deg, hsl(32 90% 54%), hsl(25 95% 58%));
-    --gradient-hero: linear-gradient(135deg, hsl(211 100% 18%) 0%, hsl(199 89% 48%) 50%, hsl(32 90% 54%) 100%);
+    /* Modern SaaS Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(199 89% 48%));
+    --gradient-secondary: linear-gradient(135deg, hsl(340 82% 52%), hsl(25 95% 58%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(199 89% 48%) 50%, hsl(340 82% 52%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(220 20% 98%), hsl(220 13% 95%));
-    --gradient-mesh: radial-gradient(at 40% 20%, hsl(211 100% 18% / 0.3) 0px, transparent 50%),
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(262 83% 58% / 0.3) 0px, transparent 50%),
                       radial-gradient(at 80% 0%, hsl(199 89% 48% / 0.25) 0px, transparent 50%),
-                      radial-gradient(at 0% 50%, hsl(32 90% 54% / 0.2) 0px, transparent 50%);
+                      radial-gradient(at 0% 50%, hsl(340 82% 52% / 0.2) 0px, transparent 50%);
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(220 13% 91% / 0.5);
     --shadow-md: 0 4px 6px -1px hsl(220 13% 91% / 0.5), 0 2px 4px -2px hsl(220 13% 91% / 0.5);
     --shadow-lg: 0 10px 15px -3px hsl(220 13% 91% / 0.5), 0 4px 6px -4px hsl(220 13% 91% / 0.5);
     --shadow-xl: 0 20px 25px -5px hsl(220 13% 91% / 0.5), 0 8px 10px -6px hsl(220 13% 91% / 0.5);
-    --shadow-glow: 0 0 20px hsl(211 100% 18% / 0.3);
+    --shadow-glow: 0 0 20px hsl(262 83% 58% / 0.3);
     --shadow-glow-accent: 0 0 20px hsl(199 89% 48% / 0.3);
   }
 
@@ -73,14 +72,13 @@ All colors MUST be HSL.
     --popover: 222 47% 9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Updated dark mode colors */
-    --primary: 211 100% 25%;
+    --primary: 262 83% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 211 100% 35%;
+    --primary-glow: 262 83% 75%;
 
-    --secondary: 32 90% 60%;
+    --secondary: 340 82% 60%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 32 90% 70%;
+    --secondary-glow: 340 82% 70%;
 
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
@@ -99,21 +97,21 @@ All colors MUST be HSL.
     --input: 217 33% 17%;
     --ring: 262 83% 65%;
     
-    /* Dark Mode Gradients with new colors */
-    --gradient-primary: linear-gradient(135deg, hsl(211 100% 25%), hsl(199 89% 55%));
-    --gradient-secondary: linear-gradient(135deg, hsl(32 90% 60%), hsl(25 95% 65%));
-    --gradient-hero: linear-gradient(135deg, hsl(211 100% 25%) 0%, hsl(199 89% 55%) 50%, hsl(32 90% 60%) 100%);
+    /* Dark Mode Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 65%), hsl(199 89% 55%));
+    --gradient-secondary: linear-gradient(135deg, hsl(340 82% 60%), hsl(25 95% 65%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 65%) 0%, hsl(199 89% 55%) 50%, hsl(340 82% 60%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(222 47% 6%), hsl(217 33% 17%));
-    --gradient-mesh: radial-gradient(at 40% 20%, hsl(211 100% 25% / 0.25) 0px, transparent 50%),
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(262 83% 65% / 0.25) 0px, transparent 50%),
                       radial-gradient(at 80% 0%, hsl(199 89% 55% / 0.2) 0px, transparent 50%),
-                      radial-gradient(at 0% 50%, hsl(32 90% 60% / 0.15) 0px, transparent 50%);
+                      radial-gradient(at 0% 50%, hsl(340 82% 60% / 0.15) 0px, transparent 50%);
 
     /* Dark Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.5);
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.5), 0 2px 4px -2px hsl(0 0% 0% / 0.5);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5), 0 4px 6px -4px hsl(0 0% 0% / 0.5);
     --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.5), 0 8px 10px -6px hsl(0 0% 0% / 0.5);
-    --shadow-glow: 0 0 25px hsl(211 100% 25% / 0.4);
+    --shadow-glow: 0 0 25px hsl(262 83% 65% / 0.4);
     --shadow-glow-accent: 0 0 25px hsl(199 89% 55% / 0.4);
   }
 }

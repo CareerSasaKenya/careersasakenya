@@ -505,7 +505,7 @@ const Jobs = () => {
                 </div>
               </div>
               
-              {/* Advanced Search Toggle for Mobile */}
+              {/* Advanced Search Toggle for Mobile - Only visible on mobile */}
               <div className="md:hidden mt-3">
                 <button
                   onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
@@ -525,8 +525,8 @@ const Jobs = () => {
                 </button>
               </div>
               
-              {/* Advanced Search Options - Hidden by default on mobile, always visible on desktop */}
-              <div className={`mt-3 ${showAdvancedSearch ? 'block' : 'hidden md:block'}`}>
+              {/* Advanced Search Options - Only visible on mobile when toggled */}
+              <div className={`md:hidden mt-3 ${showAdvancedSearch ? 'block' : 'hidden'}`}>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                   {/* Location Search with Counties Dropdown - Truly Compact with Dynamic Arrow */}
                   <div className="relative">
