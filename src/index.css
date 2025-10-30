@@ -131,34 +131,96 @@ All colors MUST be HSL.
     scroll-behavior: smooth;
   }
 
-  /* Preserve list styling for rich text content */
+  /* Rich text content styling */
+  .richtext-content {
+    @apply leading-relaxed;
+  }
+
+  .richtext-content h1,
+  .richtext-content h2,
+  .richtext-content h3,
+  .richtext-content h4,
+  .richtext-content h5,
+  .richtext-content h6 {
+    @apply font-bold mt-6 mb-4 text-foreground;
+  }
+
+  .richtext-content h1 {
+    @apply text-3xl;
+  }
+
+  .richtext-content h2 {
+    @apply text-2xl;
+  }
+
+  .richtext-content h3 {
+    @apply text-xl;
+  }
+
+  .richtext-content h4 {
+    @apply text-lg;
+  }
+
+  .richtext-content p {
+    @apply mb-4;
+  }
+
+  .richtext-content strong,
+  .richtext-content b {
+    @apply font-bold;
+  }
+
+  .richtext-content em,
+  .richtext-content i {
+    @apply italic;
+  }
+
   .richtext-content ul,
   .richtext-content ol {
-    @apply list-disc list-inside mb-2;
+    @apply list-disc list-inside mb-4 ml-4;
+  }
+
+  .richtext-content ol {
+    @apply list-decimal;
   }
 
   .richtext-content ul ul,
-  .richtext-content ol ol {
-    @apply ml-6;
+  .richtext-content ol ol,
+  .richtext-content ul ol,
+  .richtext-content ol ul {
+    @apply ml-6 mb-0;
   }
 
-  .richtext-content ol {
-    @apply list-decimal;
+  .richtext-content li {
+    @apply mb-1;
   }
 
-  /* Specific fix for job details page */
-  .text-muted-foreground ul,
-  .text-muted-foreground ol {
-    @apply list-disc list-inside ml-4 mb-2;
+  .richtext-content li:last-child {
+    @apply mb-0;
   }
 
-  .text-muted-foreground ul ul,
-  .text-muted-foreground ol ol {
-    @apply ml-6;
+  .richtext-content a {
+    @apply text-primary underline hover:text-primary/80;
   }
 
-  .text-muted-foreground ol {
-    @apply list-decimal;
+  .richtext-content blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-4;
+  }
+
+  .richtext-content pre {
+    @apply bg-muted p-4 rounded-lg overflow-x-auto my-4;
+  }
+
+  .richtext-content code {
+    @apply bg-muted p-1 rounded font-mono;
+  }
+
+  .richtext-content img {
+    @apply max-w-full h-auto my-4 rounded-lg;
+  }
+
+  .richtext-content hr {
+    @apply my-6 border-t border-border;
   }
 }
 

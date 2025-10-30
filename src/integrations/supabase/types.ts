@@ -168,13 +168,13 @@ export type Database = {
           posted_by: Database["public"]["Enums"]["posted_by"] | null
           practice_area: string | null
           project_type: string | null
-          required_qualifications: Json | null
+          required_qualifications: string | null
           salary: string | null
           salary_currency: string | null
           salary_max: number | null
           salary_min: number | null
           salary_period: Database["public"]["Enums"]["salary_period"] | null
-          software_skills: Json | null
+          software_skills: string | null
           specialization: string | null
           status: Database["public"]["Enums"]["job_status"] | null
           tags: Json | null
@@ -245,13 +245,13 @@ export type Database = {
           posted_by?: Database["public"]["Enums"]["posted_by"] | null
           practice_area?: string | null
           project_type?: string | null
-          required_qualifications?: Json | null
+          required_qualifications?: string | null
           salary?: string | null
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           salary_period?: Database["public"]["Enums"]["salary_period"] | null
-          software_skills?: Json | null
+          software_skills?: string | null
           specialization?: string | null
           status?: Database["public"]["Enums"]["job_status"] | null
           tags?: Json | null
@@ -322,13 +322,13 @@ export type Database = {
           posted_by?: Database["public"]["Enums"]["posted_by"] | null
           practice_area?: string | null
           project_type?: string | null
-          required_qualifications?: Json | null
+          required_qualifications?: string | null
           salary?: string | null
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
           salary_period?: Database["public"]["Enums"]["salary_period"] | null
-          software_skills?: Json | null
+          software_skills?: string | null
           specialization?: string | null
           status?: Database["public"]["Enums"]["job_status"] | null
           tags?: Json | null
@@ -461,6 +461,7 @@ export type Database = {
       [_ in never]: never
     }
   }
+}
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 

@@ -30,6 +30,9 @@ const PostJob = () => {
     title: "",
     company: "",
     description: "",
+    responsibilities: "",
+    required_qualifications: "",
+    software_skills: "",
     company_id: "",
     // Google Job Posting Fields
     valid_through: "",
@@ -42,12 +45,10 @@ const PostJob = () => {
     application_url: "",
     // STEM/Health/Architecture Fields
     industry: "",
-    required_qualifications: "",
     education_level_id: "none", // Changed from empty string to "none"
     experience_level: "Mid",
     language_requirements: "",
     // New fields
-    responsibilities: "",
     salary_visibility: "Show",
     minimum_experience: "",
     is_featured: false,
@@ -66,6 +67,48 @@ const PostJob = () => {
     job_function: "",
     status: "active",
     additional_info: "",
+  } as {
+    // Core fields
+    title: string;
+    company: string;
+    description: string;
+    responsibilities: string;
+    required_qualifications: string;
+    software_skills: string;
+    company_id: string;
+    // Google Job Posting Fields
+    valid_through: string;
+    employment_type: string;
+    job_location_type: string;
+    job_location_country: string;
+    job_location_county: string;
+    job_location_city: string;
+    direct_apply: boolean;
+    application_url: string;
+    // STEM/Health/Architecture Fields
+    industry: string;
+    education_level_id: string;
+    experience_level: string;
+    language_requirements: string;
+    // New fields
+    salary_visibility: string;
+    minimum_experience: string;
+    is_featured: boolean;
+    salary_type: string;
+    // Compensation & Schedule
+    salary_currency: string;
+    salary_min: string;
+    salary_max: string;
+    salary_period: string;
+    work_schedule: string;
+    // Application
+    apply_link: string;
+    apply_email: string;
+    // Functional Portal Fields
+    tags: string;
+    job_function: string;
+    status: string;
+    additional_info: string;
   });
 
   const [selectedCountyId, setSelectedCountyId] = useState<string>("");
@@ -213,6 +256,9 @@ const PostJob = () => {
         title: existingJob.title || "",
         company: existingJob.company || "",
         description: existingJob.description || "",
+        responsibilities: (existingJob as any).responsibilities || "",
+        required_qualifications: existingJob.required_qualifications?.toString() || "",
+        software_skills: (existingJob as any).software_skills || "",
         company_id: existingJob.company_id || "",
         
         // Google Job Posting Fields
@@ -227,13 +273,11 @@ const PostJob = () => {
         
         // STEM/Health/Architecture Fields
         industry: existingJob.industry || "",
-        required_qualifications: existingJob.required_qualifications?.toString() || "",
         education_level_id: (existingJob as any).education_level_id ? String((existingJob as any).education_level_id) : "none", // Updated to use "none" instead of empty string
         experience_level: existingJob.experience_level || "Mid",
         language_requirements: existingJob.language_requirements || "",
         
         // New fields
-        responsibilities: (existingJob as any).responsibilities || "",
         salary_visibility: (existingJob as any).salary_visibility || "Show",
         minimum_experience: (existingJob as any).minimum_experience?.toString() || "",
         is_featured: (existingJob as any).is_featured ?? false,
@@ -572,13 +616,16 @@ const PostJob = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="industry">Industry *</Label>
-                      <Select value={formData.industry} onValueChange={(value) => setFormData({...formData, industry: value})}>
+                      <Select 
+                        value={formData.industry} 
+                        onValueChange={(value) => setFormData({...formData, industry: value})}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select industry" />
                         </SelectTrigger>
                         <SelectContent>
-                          {industries?.map(ind => (
-                            <SelectItem key={ind.id} value={ind.name}>{ind.name}</SelectItem>
+                          {industries?.map(industry => (
+                            <SelectItem key={industry.id} value={industry.name}>{industry.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -586,7 +633,10 @@ const PostJob = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="job_function">Job Function</Label>
-                      <Select value={formData.job_function} onValueChange={(value) => setFormData({...formData, job_function: value})}>
+                      <Select 
+                        value={formData.job_function} 
+                        onValueChange={(value) => setFormData({...formData, job_function: value})}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select job function" />
                         </SelectTrigger>
@@ -616,6 +666,26 @@ const PostJob = () => {
                       label="Key Responsibilities"
                       placeholder="List the key responsibilities for this role..."
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <RichTextEditor
+                      value={formData.required_qualifications}
+                      onChange={(value) => setFormData({...formData, required_qualifications: value})}
+                      label="Required Qualifications"
+                      placeholder="Enter required qualifications, e.g., Bachelor's in Computer Science, 3+ years experience"
+                    />
+                    <p className="text-xs text-muted-foreground">Use the editor to format your qualifications</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <RichTextEditor
+                      value={formData.software_skills}
+                      onChange={(value) => setFormData({...formData, software_skills: value})}
+                      label="Required Skills & Software"
+                      placeholder="List required skills and software, e.g., React, Node.js, Adobe Creative Suite"
+                    />
+                    <p className="text-xs text-muted-foreground">Use the editor to format your skills and software requirements</p>
                   </div>
                 </TabsContent>
 

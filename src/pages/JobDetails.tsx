@@ -375,6 +375,19 @@ const JobDetails = () => {
                   <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.description }} />
                 </div>
 
+                {job.responsibilities && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Key Responsibilities
+                      </h3>
+                      <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.responsibilities }} />
+                    </div>
+                  </>
+                )}
+
                 {job.required_qualifications && (
                   <>
                     <Separator />
@@ -387,8 +400,6 @@ const JobDetails = () => {
                     </div>
                   </>
                 )}
-
-
 
                 {job.software_skills && (
                   <>
@@ -522,6 +533,9 @@ const JobDetails = () => {
                 onApplied={() => queryClient.invalidateQueries({ queryKey: ["application", job?.id, user?.id] })} 
               />
             </div>
+
+            {/* Job Details Section */}
+            <RoleDetails job={job} />
 
             {job?.tags && Array.isArray(job.tags) && job.tags.length > 0 && (
               <Card>
@@ -714,6 +728,37 @@ const RoleDetails = ({ job }: { job: Job }) => {
             <div>
               <p className="text-sm text-muted-foreground">Visa Sponsorship</p>
               <p className="font-medium">{job.visa_sponsorship}</p>
+            </div>
+          </div>
+        )}
+
+        {/* New fields added */}
+        {job.minimum_experience && (
+          <div className="flex items-start gap-3">
+            <Briefcase className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Minimum Experience</p>
+              <p className="font-medium">{job.minimum_experience} years</p>
+            </div>
+          </div>
+        )}
+
+        {job.salary_type && (
+          <div className="flex items-start gap-3">
+            <DollarSign className="h-5 w-5 text-secondary mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Salary Type</p>
+              <p className="font-medium">{job.salary_type}</p>
+            </div>
+          </div>
+        )}
+
+        {job.is_featured && (
+          <div className="flex items-start gap-3">
+            <Award className="h-5 w-5 text-yellow-500 mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Featured Job</p>
+              <p className="font-medium text-yellow-600">Yes</p>
             </div>
           </div>
         )}
