@@ -67,6 +67,10 @@ const PostJob = () => {
 
   const [selectedCountyId, setSelectedCountyId] = useState<string>("");
   const [selectedTownId, setSelectedTownId] = useState<string>("");
+  
+  // State for automatic company creation
+  const [shouldCreateCompany, setShouldCreateCompany] = useState(false);
+  const [newCompanyName, setNewCompanyName] = useState("");
 
   const { data: industries } = useQuery({
     queryKey: ["industries"],
@@ -278,20 +282,55 @@ const PostJob = () => {
     mutationFn: async (data: typeof formData) => {
       if (!user) throw new Error("Not authenticated");
 
+      // Determine the company name to use
+      const companyName = shouldCreateCompany && role === "admin" ? newCompanyName : data.company;
+      
+      // Check if we need to create a company first (admin only)
+      let companyId = data.company_id || null;
+      
+      if (role === "admin" && shouldCreateCompany && newCompanyName) {
+        // Create new company
+        const companyData = {
+          user_id: user.id,
+          name: newCompanyName,
+          industry: data.industry || null,
+          website: null,
+          description: null,
+          location: null,
+          size: null,
+          logo: null,
+        };
+
+        const { data: company, error: companyError } = await supabase
+          .from("companies")
+          .insert(companyData)
+          .select()
+          .single();
+
+        if (companyError) throw companyError;
+        
+        companyId = company.id;
+        
+        // Update all companies list
+        queryClient.invalidateQueries({ queryKey: ["all-companies"] });
+        
+        toast.success(`Company "${company.name}" created successfully!`);
+      }
+
       const jobData: any = {
         // Core fields
         title: data.title,
-        company: data.company,
+        company: companyName,
         description: data.description,
         user_id: user.id,
-        company_id: data.company_id || null,
+        company_id: companyId,
         posted_by: role === "admin" ? "admin" : "employer",
         status: data.status,
 
         // Google Job Posting Fields
         valid_through: data.valid_through || null,
         employment_type: data.employment_type,
-        hiring_organization_name: data.company,
+        hiring_organization_name: companyName,
         job_location_type: data.job_location_type,
         job_location_country: data.job_location_country,
         job_location_county: data.job_location_county || null,
@@ -364,7 +403,10 @@ const PostJob = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.company || !formData.description) {
+    // Determine the company name to use
+    const companyName = shouldCreateCompany && role === "admin" ? newCompanyName : formData.company;
+    
+    if (!formData.title || !companyName || !formData.description) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -379,7 +421,10 @@ const PostJob = () => {
       return;
     }
     
-    mutation.mutate(formData);
+    mutation.mutate({
+      ...formData,
+      company: companyName
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -437,21 +482,37 @@ const PostJob = () => {
                     <div className="space-y-2">
                       <Label htmlFor="company_id">Attach to Company (Optional)</Label>
                       <Select
-                        value={formData.company_id}
+                        value={formData.company_id || (shouldCreateCompany ? "create-new" : "none")}
                         onValueChange={(value) => {
-                          const selectedCompany = allCompanies?.find(c => c.id === value);
-                          setFormData({
-                            ...formData,
-                            company_id: value === "none" ? "" : value,
-                            company: selectedCompany?.name || formData.company,
-                          });
+                          if (value === "create-new") {
+                            setShouldCreateCompany(true);
+                            setFormData({
+                              ...formData,
+                              company_id: "",
+                            });
+                          } else if (value === "none") {
+                            setShouldCreateCompany(false);
+                            setFormData({
+                              ...formData,
+                              company_id: "",
+                            });
+                          } else {
+                            const selectedCompany = allCompanies?.find(c => c.id === value);
+                            setShouldCreateCompany(false);
+                            setFormData({
+                              ...formData,
+                              company_id: value,
+                              company: selectedCompany?.name || formData.company,
+                            });
+                          }
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a company or leave blank for direct listing" />
+                          <SelectValue placeholder="Select a company or create new" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">No Company (Direct Listing)</SelectItem>
+                          <SelectItem value="create-new">Create New Company</SelectItem>
                           {allCompanies?.map((company) => (
                             <SelectItem key={company.id} value={company.id}>
                               {company.name}
@@ -462,30 +523,41 @@ const PostJob = () => {
                     </div>
                   )}
 
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Job Title *</Label>
-                    <Input
-                      id="title"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleChange}
-                      placeholder="e.g., Senior Software Engineer"
-                      required
-                    />
-                  </div>
+                  {/* Show company creation form when needed */}
+                  {role === "admin" && shouldCreateCompany && (
+                    <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                      <h3 className="font-medium">Create New Company</h3>
+                      <div className="space-y-2">
+                        <Label htmlFor="new_company_name">Company Name *</Label>
+                        <Input
+                          id="new_company_name"
+                          value={newCompanyName}
+                          onChange={(e) => setNewCompanyName(e.target.value)}
+                          placeholder="e.g., TechCorp Kenya"
+                          required
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          This company will be automatically created when you post the job.
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
-                  <div className="space-y-2">
-                    <Label htmlFor="company">Company Name *</Label>
-                    <Input
-                      id="company"
-                      name="company"
-                      value={userCompany?.name || formData.company}
-                      onChange={handleChange}
-                      placeholder="e.g., TechCorp Kenya"
-                      required
-                      disabled={role === "employer" && !!userCompany}
-                    />
-                  </div>
+                  {/* Show regular company input when not creating new company */}
+                  {(!shouldCreateCompany || role !== "admin") && (
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Company Name *</Label>
+                      <Input
+                        id="company"
+                        name="company"
+                        value={userCompany?.name || formData.company}
+                        onChange={handleChange}
+                        placeholder="e.g., TechCorp Kenya"
+                        required
+                        disabled={role === "employer" && !!userCompany}
+                      />
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
