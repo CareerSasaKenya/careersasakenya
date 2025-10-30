@@ -388,18 +388,7 @@ const JobDetails = () => {
                   </>
                 )}
 
-                {job.preferred_qualifications && (
-                  <>
-                    <Separator />
-                    <div>
-                      <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                        <GraduationCap className="h-5 w-5" />
-                        Preferred Qualifications
-                      </h3>
-                      <div className="richtext-content text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: job.preferred_qualifications }} />
-                    </div>
-                  </>
-                )}
+
 
                 {job.software_skills && (
                   <>

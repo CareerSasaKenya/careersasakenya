@@ -38,14 +38,11 @@ const PostJob = () => {
     job_location_country: "Kenya",
     job_location_county: "",
     job_location_city: "",
-    job_location_address: "",
-    applicant_location_requirements: "",
     direct_apply: true,
     application_url: "",
     // STEM/Health/Architecture Fields
     industry: "",
     required_qualifications: "",
-    preferred_qualifications: "",
     education_level_id: "none", // Changed from empty string to "none"
     experience_level: "Mid",
     language_requirements: "",
@@ -219,15 +216,12 @@ const PostJob = () => {
         job_location_country: existingJob.job_location_country || "Kenya",
         job_location_county: existingJob.job_location_county || "",
         job_location_city: existingJob.job_location_city || "",
-        job_location_address: existingJob.job_location_address || "",
-        applicant_location_requirements: existingJob.applicant_location_requirements?.toString() || "",
         direct_apply: existingJob.direct_apply ?? true,
         application_url: existingJob.application_url || "",
         
         // STEM/Health/Architecture Fields
         industry: existingJob.industry || "",
         required_qualifications: existingJob.required_qualifications?.toString() || "",
-        preferred_qualifications: existingJob.preferred_qualifications?.toString() || "",
         education_level_id: (existingJob as any).education_level_id ? String((existingJob as any).education_level_id) : "none", // Updated to use "none" instead of empty string
         experience_level: existingJob.experience_level || "Mid",
         language_requirements: existingJob.language_requirements || "",
@@ -335,17 +329,13 @@ const PostJob = () => {
         job_location_country: data.job_location_country,
         job_location_county: data.job_location_county || null,
         job_location_city: data.job_location_city || null,
-        job_location_address: data.job_location_address || null,
         location: `${data.job_location_city || ''}${data.job_location_county ? ', ' + data.job_location_county : ''}${data.job_location_country ? ', ' + data.job_location_country : ''}`.trim().replace(/^,\s*/, ''),
-
-        applicant_location_requirements: data.applicant_location_requirements || null,
         direct_apply: data.direct_apply,
         application_url: data.application_url || null,
 
         // STEM/Health/Architecture Fields
         industry: data.industry || null,
         required_qualifications: data.required_qualifications || null,
-        preferred_qualifications: data.preferred_qualifications || null,
         education_level_id: data.education_level_id && data.education_level_id !== "none" ? parseInt(data.education_level_id) : null, // Updated to handle "none" value
         experience_level: data.experience_level || null,
         language_requirements: data.language_requirements || null,
@@ -755,16 +745,7 @@ const PostJob = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="job_location_address">Full Address</Label>
-                      <Input
-                        id="job_location_address"
-                        name="job_location_address"
-                        value={formData.job_location_address}
-                        onChange={handleChange}
-                        placeholder="e.g., 123 Main Street, Building A"
-                      />
-                    </div>
+
                   </div>
                 </TabsContent>
 
@@ -779,15 +760,7 @@ const PostJob = () => {
                     <p className="text-xs text-muted-foreground">Use the editor to format your qualifications</p>
                   </div>
 
-                  <div className="space-y-2">
-                    <RichTextEditor
-                      value={formData.preferred_qualifications}
-                      onChange={(value) => setFormData({...formData, preferred_qualifications: value})}
-                      label="Preferred Qualifications"
-                      placeholder="Enter preferred qualifications, e.g., Master's degree, Leadership experience"
-                    />
-                    <p className="text-xs text-muted-foreground">Use the editor to format your qualifications</p>
-                  </div>
+
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -823,15 +796,7 @@ const PostJob = () => {
                   {/* Practice Area (Health) and Project Type (Architecture) fields removed */}
                   {/* Visa Sponsorship field removed */}
 
-                  {/* Applicant Location Requirements moved from application tab */}
-                  <div className="space-y-2">
-                    <RichTextEditor
-                      value={formData.applicant_location_requirements}
-                      onChange={(value) => setFormData({...formData, applicant_location_requirements: value})}
-                      label="Applicant Location Requirements"
-                      placeholder="e.g., Must be authorized to work in Kenya"
-                    />
-                  </div>
+
 
                   <div className="space-y-2">
                     <RichTextEditor

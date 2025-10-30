@@ -132,7 +132,6 @@ export type Database = {
       }
       jobs: {
         Row: {
-          applicant_location_requirements: string | null
           application_url: string | null
           applications_count: number | null
           apply_email: string | null
@@ -156,7 +155,6 @@ export type Database = {
           identifier: string | null
           industry: string | null
           job_function: string | null
-          job_location_address: string | null
           job_location_city: string | null
           job_location_country: string | null
           job_location_county: string | null
@@ -169,7 +167,6 @@ export type Database = {
           location: string
           posted_by: Database["public"]["Enums"]["posted_by"] | null
           practice_area: string | null
-          preferred_qualifications: Json | null
           project_type: string | null
           required_qualifications: Json | null
           salary: string | null
@@ -193,7 +190,6 @@ export type Database = {
           additional_info: string | null
         }
         Insert: {
-          applicant_location_requirements?: string | null
           application_url?: string | null
           applications_count?: number | null
           apply_email?: string | null
@@ -219,7 +215,6 @@ export type Database = {
           identifier?: string | null
           industry?: string | null
           job_function?: string | null
-          job_location_address?: string | null
           job_location_city?: string | null
           job_location_country?: string | null
           job_location_county?: string | null
@@ -232,7 +227,6 @@ export type Database = {
           location: string
           posted_by?: Database["public"]["Enums"]["posted_by"] | null
           practice_area?: string | null
-          preferred_qualifications?: Json | null
           project_type?: string | null
           required_qualifications?: Json | null
           salary?: string | null
@@ -256,7 +250,6 @@ export type Database = {
           additional_info?: string | null
         }
         Update: {
-          applicant_location_requirements?: string | null
           application_url?: string | null
           applications_count?: number | null
           apply_email?: string | null
@@ -282,7 +275,6 @@ export type Database = {
           identifier?: string | null
           industry?: string | null
           job_function?: string | null
-          job_location_address?: string | null
           job_location_city?: string | null
           job_location_country?: string | null
           job_location_county?: string | null
@@ -295,7 +287,6 @@ export type Database = {
           location?: string
           posted_by?: Database["public"]["Enums"]["posted_by"] | null
           practice_area?: string | null
-          preferred_qualifications?: Json | null
           project_type?: string | null
           required_qualifications?: Json | null
           salary?: string | null
