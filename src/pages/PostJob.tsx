@@ -46,6 +46,12 @@ const PostJob = () => {
     education_level_id: "none", // Changed from empty string to "none"
     experience_level: "Mid",
     language_requirements: "",
+    // New fields
+    responsibilities: "",
+    salary_visibility: "Show",
+    minimum_experience: "",
+    is_featured: false,
+    salary_type: "Monthly",
     // Compensation & Schedule
     salary_currency: "KES",
     salary_min: "",
@@ -226,6 +232,13 @@ const PostJob = () => {
         experience_level: existingJob.experience_level || "Mid",
         language_requirements: existingJob.language_requirements || "",
         
+        // New fields
+        responsibilities: (existingJob as any).responsibilities || "",
+        salary_visibility: (existingJob as any).salary_visibility || "Show",
+        minimum_experience: (existingJob as any).minimum_experience?.toString() || "",
+        is_featured: (existingJob as any).is_featured ?? false,
+        salary_type: (existingJob as any).salary_type || "Monthly",
+        
         // Compensation & Schedule
         salary_currency: existingJob.salary_currency || "KES",
         salary_min: existingJob.salary_min?.toString() || "",
@@ -339,6 +352,13 @@ const PostJob = () => {
         education_level_id: data.education_level_id && data.education_level_id !== "none" ? parseInt(data.education_level_id) : null, // Updated to handle "none" value
         experience_level: data.experience_level || null,
         language_requirements: data.language_requirements || null,
+
+        // New fields
+        responsibilities: data.responsibilities || null,
+        salary_visibility: data.salary_visibility || "Show",
+        minimum_experience: data.minimum_experience ? parseInt(data.minimum_experience) : null,
+        is_featured: data.is_featured,
+        salary_type: data.salary_type || null,
 
         // Compensation & Schedule
         salary_currency: data.salary_currency,
@@ -588,6 +608,15 @@ const PostJob = () => {
                       required
                     />
                   </div>
+                  
+                  <div className="space-y-2">
+                    <RichTextEditor
+                      value={formData.responsibilities}
+                      onChange={(value) => setFormData({...formData, responsibilities: value})}
+                      label="Key Responsibilities"
+                      placeholder="List the key responsibilities for this role..."
+                    />
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="details" className="space-y-4 mt-4">
@@ -649,12 +678,37 @@ const PostJob = () => {
                         onChange={handleChange}
                       />
                     </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="minimum_experience">Minimum Years of Experience</Label>
+                      <Input
+                        id="minimum_experience"
+                        name="minimum_experience"
+                        type="number"
+                        value={formData.minimum_experience}
+                        onChange={handleChange}
+                        placeholder="e.g., 3"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="is_featured">Featured Job</Label>
+                      <Select value={formData.is_featured.toString()} onValueChange={(value) => setFormData({...formData, is_featured: value === "true"})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="false">No</SelectItem>
+                          <SelectItem value="true">Yes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
                     <p className="text-sm font-medium">Compensation Details</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="salary_min">Minimum Salary</Label>
                         <Input
@@ -694,17 +748,47 @@ const PostJob = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_type">Salary Type</Label>
+                        <Select value={formData.salary_type} onValueChange={(value) => setFormData({...formData, salary_type: value})}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Monthly">Monthly</SelectItem>
+                            <SelectItem value="Weekly">Weekly</SelectItem>
+                            <SelectItem value="Hourly">Hourly</SelectItem>
+                            <SelectItem value="Annually">Annually</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="salary_visibility">Salary Visibility</Label>
+                        <Select value={formData.salary_visibility} onValueChange={(value) => setFormData({...formData, salary_visibility: value})}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Show">Show Salary</SelectItem>
+                            <SelectItem value="Hide">Hide Salary</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="work_schedule">Work Schedule</Label>
-                      <Input
-                        id="work_schedule"
-                        name="work_schedule"
-                        value={formData.work_schedule}
-                        onChange={handleChange}
-                        placeholder="e.g., Monday–Friday 8:00–17:00"
-                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="work_schedule">Work Schedule</Label>
+                        <Input
+                          id="work_schedule"
+                          name="work_schedule"
+                          value={formData.work_schedule}
+                          onChange={handleChange}
+                          placeholder="e.g., Monday–Friday 8:00–17:00"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -795,8 +879,6 @@ const PostJob = () => {
 
                   {/* Practice Area (Health) and Project Type (Architecture) fields removed */}
                   {/* Visa Sponsorship field removed */}
-
-
 
                   <div className="space-y-2">
                     <RichTextEditor

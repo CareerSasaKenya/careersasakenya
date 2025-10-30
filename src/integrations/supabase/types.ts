@@ -188,6 +188,23 @@ export type Database = {
             | null
           work_schedule: string | null
           additional_info: string | null
+          // New fields
+          responsibilities: string | null
+          qualifications: string | null
+          minimum_experience: number | null
+          job_function_id: number | null
+          industry_id: number | null
+          experience_level_ref_id: number | null
+          county_id: number | null
+          location_town: string | null
+          salary_visibility: Database["public"]["Enums"]["salary_visibility"] | null
+          salary_type: Database["public"]["Enums"]["salary_type"] | null
+          source: Database["public"]["Enums"]["job_source"] | null
+          google_indexed: boolean | null
+          is_featured: boolean | null
+          application_deadline: string | null
+          posted_date: string | null
+          slug: string | null
         }
         Insert: {
           application_url?: string | null
@@ -248,6 +265,23 @@ export type Database = {
             | null
           work_schedule?: string | null
           additional_info?: string | null
+          // New fields
+          responsibilities?: string | null
+          qualifications?: string | null
+          minimum_experience?: number | null
+          job_function_id?: number | null
+          industry_id?: number | null
+          experience_level_ref_id?: number | null
+          county_id?: number | null
+          location_town?: string | null
+          salary_visibility?: Database["public"]["Enums"]["salary_visibility"] | null
+          salary_type?: Database["public"]["Enums"]["salary_type"] | null
+          source?: Database["public"]["Enums"]["job_source"] | null
+          google_indexed?: boolean | null
+          is_featured?: boolean | null
+          application_deadline?: string | null
+          posted_date?: string | null
+          slug?: string | null
         }
         Update: {
           application_url?: string | null
@@ -308,6 +342,23 @@ export type Database = {
             | null
           work_schedule?: string | null
           additional_info?: string | null
+          // New fields
+          responsibilities?: string | null
+          qualifications?: string | null
+          minimum_experience?: number | null
+          job_function_id?: number | null
+          industry_id?: number | null
+          experience_level_ref_id?: number | null
+          county_id?: number | null
+          location_town?: string | null
+          salary_visibility?: Database["public"]["Enums"]["salary_visibility"] | null
+          salary_type?: Database["public"]["Enums"]["salary_type"] | null
+          source?: Database["public"]["Enums"]["job_source"] | null
+          google_indexed?: boolean | null
+          is_featured?: boolean | null
+          application_deadline?: string | null
+          posted_date?: string | null
+          slug?: string | null
         }
         Relationships: [
           {
@@ -402,12 +453,14 @@ export type Database = {
       posted_by: "admin" | "employer"
       salary_period: "YEAR" | "MONTH" | "WEEK" | "DAY" | "HOUR"
       visa_sponsorship: "Yes" | "No" | "Not Applicable"
-    }
+      salary_visibility: "Show" | "Hide"
+      salary_type: "Monthly" | "Weekly" | "Hourly" | "Annually"
+      job_source: "Employer" | "Admin" | "Scraper"
+    },
     CompositeTypes: {
       [_ in never]: never
     }
   }
-}
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
@@ -545,6 +598,9 @@ export const Constants = {
       posted_by: ["admin", "employer"],
       salary_period: ["YEAR", "MONTH", "WEEK", "DAY", "HOUR"],
       visa_sponsorship: ["Yes", "No", "Not Applicable"],
+      salary_visibility: ["Show", "Hide"],
+      salary_type: ["Monthly", "Weekly", "Hourly", "Annually"],
+      job_source: ["Employer", "Admin", "Scraper"],
     },
   },
 } as const
