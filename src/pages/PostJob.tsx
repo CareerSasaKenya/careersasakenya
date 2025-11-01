@@ -224,10 +224,19 @@ const PostJob = () => {
         .select("*")
         .order("name");
 
-      if (error) throw error;
+      if (error) {
+        // Handle 409 conflict errors specifically
+        if (error.code === '409') {
+          console.error("Conflict error fetching companies:", error);
+          // Return empty array instead of throwing to prevent UI breakage
+          return [];
+        }
+        throw error;
+      }
       return data;
     },
     enabled: role === "admin",
+    retry: false, // Don't retry on errors to avoid repeated 409s
   });
 
   // Add query to fetch job data when editing
@@ -259,7 +268,7 @@ const PostJob = () => {
         responsibilities: (existingJob as any).responsibilities || "",
         required_qualifications: existingJob.required_qualifications?.toString() || "",
         software_skills: (existingJob as any).software_skills || "",
-        company_id: existingJob.company_id || "",
+        company_id: existingJob.company_id ? String(existingJob.company_id) : "",
         
         // Google Job Posting Fields
         valid_through: existingJob.valid_through || "",
@@ -311,6 +320,12 @@ const PostJob = () => {
         const town = towns?.find(townItem => townItem.name === existingJob.job_location_city);
         if (town) setSelectedTownId(String(town.id));
       }
+      
+      // Reset company creation state when loading existing job
+      if (existingJob.company_id) {
+        setShouldCreateCompany(false);
+        setNewCompanyName("");
+      }
     }
   }, [existingJob, counties, towns]);
 
@@ -337,35 +352,119 @@ const PostJob = () => {
       const companyName = shouldCreateCompany && role === "admin" ? newCompanyName : data.company;
       
       // Check if we need to create a company first (admin only)
+      // Use the company_id from formData (which is set when loading existing job)
       let companyId = data.company_id || null;
       
+      // Only create new company if explicitly requested
+      // Don't create during updates if company_id already exists (unless user explicitly wants to change it)
       if (role === "admin" && shouldCreateCompany && newCompanyName) {
-        // Create new company
-        const companyData = {
-          user_id: user.id,
-          name: newCompanyName,
-          industry: data.industry || null,
-          website: null,
-          description: null,
-          location: null,
-          size: null,
-          logo: null,
-        };
-
-        const { data: company, error: companyError } = await supabase
+        // Check if company already exists
+        const { data: existingCompany, error: checkError } = await supabase
           .from("companies")
-          .insert(companyData)
-          .select()
-          .single();
+          .select("id")
+          .eq("name", newCompanyName)
+          .maybeSingle();
 
-        if (companyError) throw companyError;
-        
-        companyId = company.id;
-        
-        // Update all companies list
-        queryClient.invalidateQueries({ queryKey: ["all-companies"] });
-        
-        toast.success(`Company "${company.name}" created successfully!`);
+        if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "Record not found"
+          console.error("Error checking existing company:", checkError);
+          throw checkError;
+        }
+
+        if (existingCompany) {
+          // Use existing company
+          companyId = existingCompany.id;
+          toast.info(`Using existing company "${newCompanyName}"`);
+        } else {
+          // Create new company
+          const companyData = {
+            user_id: user.id,
+            name: newCompanyName,
+            industry: data.industry || null,
+            website: null,
+            description: null,
+            location: null,
+            size: null,
+            logo: null,
+          };
+
+          const { data: company, error: companyError } = await supabase
+            .from("companies")
+            .insert(companyData)
+            .select()
+            .single();
+
+          if (companyError) {
+            // Handle specific error cases
+            if (companyError.code === '23505') {
+              // Unique violation error (PostgreSQL error code)
+              if (companyError.message.includes('user_id')) {
+                // Check if user already has a company
+                const { data: userCompany, error: userCompanyError } = await supabase
+                  .from("companies")
+                  .select("*")
+                  .eq("user_id", user.id)
+                  .maybeSingle();
+
+                if (userCompanyError) {
+                  throw userCompanyError;
+                }
+
+                if (userCompany) {
+                  companyId = userCompany.id;
+                  toast.info(`Using your existing company "${userCompany.name}"`);
+                } else {
+                  throw new Error("Unable to create or find company for user.");
+                }
+              } else if (companyError.message.includes('name')) {
+                // Try to find the company by name
+                const { data: existingCompany, error: findError } = await supabase
+                  .from("companies")
+                  .select("id")
+                  .eq("name", newCompanyName)
+                  .maybeSingle();
+
+                if (findError) {
+                  throw new Error("A company with this name already exists. Please select it from the dropdown.");
+                }
+
+                if (existingCompany) {
+                  companyId = existingCompany.id;
+                  toast.info(`Using existing company "${newCompanyName}"`);
+                } else {
+                  throw new Error("A company with this name already exists. Please choose a different name or select the existing company from the dropdown.");
+                }
+              }
+            }
+            // Handle 409 conflict errors
+            else if (companyError.code === '409') {
+              // Try to fetch the company that caused the conflict
+              const { data: conflictingCompany, error: fetchError } = await supabase
+                .from("companies")
+                .select("id")
+                .eq("name", newCompanyName)
+                .maybeSingle();
+
+              if (fetchError) {
+                throw new Error("A company with this name or details already exists. Please select an existing company or use a different name.");
+              }
+
+              if (conflictingCompany) {
+                companyId = conflictingCompany.id;
+                toast.info(`Using existing company "${newCompanyName}"`);
+              } else {
+                throw new Error("A company with this name or details already exists. Please select an existing company or use a different name.");
+              }
+            } else {
+              console.error("Company creation error:", companyError);
+              throw companyError;
+            }
+          } else {
+            companyId = company.id;
+            // Update all companies list
+            queryClient.invalidateQueries({ queryKey: ["all-companies"] });
+            toast.success(`Company "${company.name}" created successfully!`);
+          }
+        }
       }
 
       const jobData: any = {
@@ -430,13 +529,37 @@ const PostJob = () => {
           .from("jobs")
           .update(jobData)
           .eq("id", jobId);
-        if (error) throw error;
+        
+        if (error) {
+          // Handle specific error cases
+          if (error.code === '409') {
+            throw new Error("Conflict: The job could not be updated due to a database constraint. Please check that all referenced companies and data are valid.");
+          }
+          if (error.code === '23503') {
+            // Foreign key violation
+            throw new Error("Invalid company reference. Please select a valid company or create a new one.");
+          }
+          console.error("Job update error:", error);
+          throw error;
+        }
       } else {
         // Create new job
         const { error } = await supabase
           .from("jobs")
           .insert([jobData]);
-        if (error) throw error;
+        
+        if (error) {
+          // Handle specific error cases
+          if (error.code === '409') {
+            throw new Error("Conflict: The job could not be created due to a database constraint. Please check that all data is valid.");
+          }
+          if (error.code === '23503') {
+            // Foreign key violation
+            throw new Error("Invalid company reference. Please select a valid company or create a new one.");
+          }
+          console.error("Job creation error:", error);
+          throw error;
+        }
       }
     },
     onSuccess: () => {
@@ -444,12 +567,31 @@ const PostJob = () => {
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
       navigate("/dashboard");
     },
-    onError: (error) => {
-      toast.error(jobId ? "Failed to update job. Please try again." : "Failed to post job. Please try again.");
+    onError: (error: any) => {
       console.error("Job operation error:", error);
-      // Show more detailed error information
+      
+      // Extract and display user-friendly error message
+      let errorMessage = jobId ? "Failed to update job." : "Failed to post job.";
+      
       if (error instanceof Error) {
-        toast.error(`Error: ${error.message}`);
+        errorMessage = error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      // Show the error message
+      toast.error(errorMessage);
+      
+      // Also log full error for debugging
+      if (error?.code) {
+        console.error("Error details:", {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
       }
     },
   });
@@ -680,25 +822,6 @@ const PostJob = () => {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <RichTextEditor
-                      value={formData.required_qualifications}
-                      onChange={(value) => setFormData({...formData, required_qualifications: value})}
-                      label="Required Qualifications"
-                      placeholder="Enter required qualifications, e.g., Bachelor's in Computer Science, 3+ years experience"
-                    />
-                    <p className="text-xs text-muted-foreground">Use the editor to format your qualifications</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <RichTextEditor
-                      value={formData.software_skills}
-                      onChange={(value) => setFormData({...formData, software_skills: value})}
-                      label="Required Skills & Software"
-                      placeholder="List required skills and software, e.g., React, Node.js, Adobe Creative Suite"
-                    />
-                    <p className="text-xs text-muted-foreground">Use the editor to format your skills and software requirements</p>
-                  </div>
                 </TabsContent>
 
                 <TabsContent value="details" className="space-y-4 mt-4">
