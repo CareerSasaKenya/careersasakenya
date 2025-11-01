@@ -462,6 +462,10 @@ const PostJob = () => {
             companyId = company.id;
             // Update all companies list
             queryClient.invalidateQueries({ queryKey: ["all-companies"] });
+            // Also invalidate jobs query to ensure fresh data
+            queryClient.invalidateQueries({ queryKey: ["jobs"] });
+            // Also invalidate related jobs query to ensure fresh data
+            queryClient.invalidateQueries({ queryKey: ["relatedJobs"] });
             toast.success(`Company "${company.name}" created successfully!`);
           }
         }
@@ -562,9 +566,15 @@ const PostJob = () => {
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(jobId ? "Job updated successfully!" : "Job posted successfully!");
+      // Invalidate queries to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["all-companies"] });
+      // Also invalidate related jobs query to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["relatedJobs"] });
+      // Add a small delay to ensure data synchronization
+      await new Promise(resolve => setTimeout(resolve, 500));
       navigate("/dashboard");
     },
     onError: (error: any) => {

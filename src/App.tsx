@@ -36,6 +36,7 @@ const VisibilityHandler = () => {
           const rootElement = document.getElementById('root');
           if (!rootElement || rootElement.children.length === 0) {
             console.log('Re-rendering route due to visibility change');
+            // Force a re-render by navigating to the current path
             navigate(currentPath, { replace: true });
           }
         }, 100);
