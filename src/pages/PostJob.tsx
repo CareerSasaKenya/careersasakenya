@@ -613,6 +613,18 @@ const PostJob = () => {
                     </div>
                   )}
 
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Job Title *</Label>
+                    <Input
+                      id="title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      placeholder="e.g., Software Engineer"
+                      required
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="industry">Industry *</Label>
